@@ -1,0 +1,11 @@
+{
+    "whitelist": [
+        {
+            "name": "Durov",
+            "id": 1
+        }
+    ],
+    "vkToken": "tokenVk",
+    "tgToken": "tokenTg",
+    "chat_id": "tgId"
+}

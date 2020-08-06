@@ -1,0 +1,20 @@
+{
+  "name": "without-social",
+  "version": "1.2.0",
+  "description": "When you need to be alone",
+  "main": "app.js",
+  "author": "bromanla",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bromanla/without-social.git"
+  },
+  "dependencies": {
+    "@puregram/hear": "^2.0.0",
+    "puregram": "^2.0.0",
+    "vk-io": "^4.0.0-rc.30"
+  },
+  "keywords": [
+    "vk-tg-bot"
+  ]
+}
