@@ -1,0 +1,26 @@
+{
+  "commands": [
+    {
+      "command": "users",
+      "description": "Show favorite users"
+    },
+    {
+      "command": "clear",
+      "description": "Clear selected user"
+    },
+    {
+      "command": "unread",
+      "description": "Show unread users"
+    },
+    {
+      "command": "silence",
+      "description": "In dev"
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "name": "Durov"
+    }
+  ]
+}

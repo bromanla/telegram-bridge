@@ -1,4 +1,13 @@
-nodemon.json
-desktop.ini
+# Folders
 node_modules
-config.json
+build
+
+# Local env files
+.env
+
+# Editor directories and files
+.idea
+.vscode
+
+# Json
+settings.json

@@ -1,2 +1,0 @@
-require('./vk');
-require ('./telegram');
