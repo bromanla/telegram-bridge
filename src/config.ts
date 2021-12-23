@@ -20,6 +20,7 @@ const ConfigInstance: IConfig = {
     commands: settings.commands
   },
   vk: {
+    token: process.env.VK_TOKEN ?? '',
     selected: -1,
     users: settings.users
   },

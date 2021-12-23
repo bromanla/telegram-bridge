@@ -1,6 +1,6 @@
 import { Telegraf } from 'telegraf';
 import config from '@config';
-import handlers from '../handlers';
+import handlers from '../handlers/telegram';
 
 export default async () => {
   const bot = new Telegraf(config.telegram.token);

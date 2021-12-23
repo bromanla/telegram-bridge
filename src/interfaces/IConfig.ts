@@ -15,6 +15,7 @@ export interface IConfig {
     commands: Array<ICommand>
   },
   vk: {
+    token: string
     selected: number
     users: Array<IUsers>
   },
