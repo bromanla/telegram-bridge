@@ -1,12 +1,14 @@
 import logger from '@logger';
-import telegram from './loaders/telegram';
-import vk from './loaders/vk';
+import { loader as tgLoader } from './loaders/telegram';
+import { loader as vkLoader } from './loaders/vk';
 
 const launch = async () => {
   logger.info('launch...');
 
-  await telegram();
-  await vk();
+  await tgLoader();
+  await vkLoader();
+
+  logger.info('ok');
 };
 
 launch();

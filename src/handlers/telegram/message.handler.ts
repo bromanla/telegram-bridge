@@ -1,5 +1,6 @@
 import { Composer } from 'telegraf';
 import config from '@config';
+import VkEmitter from '../../services/vk';
 
 const bot = new Composer();
 
@@ -23,14 +24,21 @@ bot.on('message', async (ctx, next) => {
 });
 
 bot.on('text', async (ctx) => {
-  ctx.reply(ctx.message.text);
+  const { text } = ctx.message;
+  VkEmitter.emit('text', {
+    id: config.vk.selected,
+    text
+  });
 });
 
 bot.on('voice', async (ctx) => {
   const fileId = ctx.message.voice.file_id;
   const { href } = await ctx.telegram.getFileLink(fileId);
-  console.log(href);
-  ctx.reply('voice');
+
+  VkEmitter.emit('voice', {
+    id: config.vk.selected,
+    href
+  });
 });
 
 bot.on('photo', async (ctx) => {
@@ -42,8 +50,20 @@ bot.on('photo', async (ctx) => {
   }
 
   const { href } = await ctx.telegram.getFileLink(fileId);
-  console.log(href);
-  ctx.reply('photo');
+  VkEmitter.emit('photo', {
+    id: config.vk.selected,
+    href
+  });
+});
+
+bot.on('document', async (ctx) => {
+  const fileId = ctx.message.document.file_id;
+
+  const { href } = await ctx.telegram.getFileLink(fileId);
+  VkEmitter.emit('document', {
+    id: config.vk.selected,
+    href
+  });
 });
 
 bot.on('sticker', async (ctx) => {
@@ -55,8 +75,10 @@ bot.on('sticker', async (ctx) => {
   }
 
   const { href } = await ctx.telegram.getFileLink(fileId);
-  console.log(href);
-  ctx.reply('sticker');
+  VkEmitter.emit('sticker', {
+    id: config.vk.selected,
+    href
+  });
 });
 
 export default bot;

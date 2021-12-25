@@ -2,9 +2,10 @@ import { Telegraf } from 'telegraf';
 import config from '@config';
 import handlers from '../handlers/telegram';
 
-export default async () => {
-  const bot = new Telegraf(config.telegram.token);
+const bot = new Telegraf(config.telegram.token);
+const api = bot.telegram;
 
+const loader = async () => {
   // Set available commands to the bot
   await bot.telegram.setMyCommands(config.telegram.commands);
 
@@ -31,3 +32,5 @@ export default async () => {
   process.once('SIGINT', () => bot.stop('SIGINT'));
   process.once('SIGTERM', () => bot.stop('SIGTERM'));
 };
+
+export { api, loader };
