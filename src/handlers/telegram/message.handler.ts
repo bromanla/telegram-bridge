@@ -1,6 +1,6 @@
 import { Composer } from 'telegraf';
 import config from '@config';
-import VkEmitter from '../../services/vk';
+import VkEmitter from '@services/vk.send.service';
 
 const bot = new Composer();
 

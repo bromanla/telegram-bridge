@@ -1,4 +1,4 @@
-import { IConfig } from '@interfaces/IConfig';
+import { IConfig } from '@interfaces';
 
 import dotenv from 'dotenv';
 import { resolve } from 'path';
@@ -23,6 +23,9 @@ const ConfigInstance: IConfig = {
     token: process.env.VK_TOKEN ?? '',
     selected: -1,
     users: settings.users
+  },
+  mongo: {
+    uri: process.env.MONGO_URI ?? ''
   },
   debug: process.env.NODE_ENV !== 'production',
   silence: false

@@ -1,14 +1,17 @@
 import logger from '@logger';
-import { loader as tgLoader } from './loaders/telegram';
-import { loader as vkLoader } from './loaders/vk';
+import { loader as tgLoader } from '@loaders/tg.loader';
+import { loader as vkLoader } from '@loaders/vk.loader';
+import { loader as mongoLoader } from '@loaders/mongo.loader';
 
 const launch = async () => {
-  logger.info('launch...');
+  await mongoLoader();
+  logger.info('mongo launched');
 
   await tgLoader();
-  await vkLoader();
+  logger.info('telegram launched');
 
-  logger.info('ok');
+  await vkLoader();
+  logger.info('vk launched');
 };
 
 launch();

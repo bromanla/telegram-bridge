@@ -19,6 +19,9 @@ export interface IConfig {
     selected: number
     users: Array<IUsers>
   },
+  mongo: {
+    uri: string
+  }
   silence: boolean
   debug: boolean
 }

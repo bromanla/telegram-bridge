@@ -22,7 +22,10 @@
   ],
   "rules": {
     "comma-dangle": ["error", "never"],
-    "@typescript-eslint/comma-dangle": ["error", "never"]
+    "@typescript-eslint/comma-dangle": ["error", "never"],
+    "import/no-cycle": "off",
+    "@typescript-eslint/naming-convention": "off"
+
   },
   "settings": {
     "import/parsers": {
