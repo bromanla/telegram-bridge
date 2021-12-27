@@ -13,6 +13,8 @@ const messageUtility = new Message();
 emitter.on('message', async (state: IState) => {
   const message = messageUtility.form(state);
 
+  console.log(state);
+
   // // Only text message
   // if (!state.attachments.length) {
   //   queue.push(async () => {

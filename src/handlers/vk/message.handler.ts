@@ -11,24 +11,11 @@ export default (bot: VK) => {
 
     // Only text message
     if (!ctx.hasAttachments()) {
-      state.type = 'text';
       telegramSendService.emit('message', state);
       return;
     }
 
-    // FIXME
-
     await ctx.loadMessagePayload();
-
-    if (ctx.getAttachments('wall').length) state.text += '\n[wall]';
-    if (ctx.getAttachments('poll').length) state.text += '\n[poll]';
-    if (ctx.getAttachments('gift').length) state.text += '\n[gift]';
-    if (ctx.getAttachments('audio').length) state.text += '\n[audio]';
-    if (ctx.getAttachments('video').length) state.text += '\n[video]';
-    if (ctx.getAttachments('story').length) state.text += '\n[story]';
-    if (ctx.getAttachments('sticker').length) state.text += '\n[sticker]';
-    if (ctx.getAttachments('graffiti').length) state.text += '\n[graffiti]';
-    if (ctx.getAttachments('wall_reply').length) state.text += '\n[wall_reply]';
 
     const images = ctx.getAttachments('photo').map((image) => image.largeSizeUrl);
 
@@ -43,6 +30,7 @@ export default (bot: VK) => {
     if (voices.length) {
       state.type = 'voice';
       state.attachments = voices;
+      telegramSendService.emit('message', state);
     }
 
     const documents = ctx.getAttachments('doc').map((document) => document.url);
@@ -50,6 +38,20 @@ export default (bot: VK) => {
     if (documents.length) {
       state.type = 'document';
       state.attachments = documents;
+      telegramSendService.emit('message', state);
     }
+
+    if (ctx.getAttachments('wall').length) state.text += '\n[wall]';
+    if (ctx.getAttachments('poll').length) state.text += '\n[poll]';
+    if (ctx.getAttachments('gift').length) state.text += '\n[gift]';
+    if (ctx.getAttachments('audio').length) state.text += '\n[audio]';
+    if (ctx.getAttachments('video').length) state.text += '\n[video]';
+    if (ctx.getAttachments('story').length) state.text += '\n[story]';
+    if (ctx.getAttachments('sticker').length) state.text += '\n[sticker]';
+    if (ctx.getAttachments('graffiti').length) state.text += '\n[graffiti]';
+    if (ctx.getAttachments('wall_reply').length) state.text += '\n[wall_reply]';
+
+    state.type = 'text';
+    telegramSendService.emit('message', state);
   });
 };

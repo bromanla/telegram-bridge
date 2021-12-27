@@ -15,7 +15,8 @@ export default (bot: VK) => {
     const state: IState = {
       user,
       title: `<b>${user.name}</b>`,
-      attachments: []
+      attachments: [],
+      type: 'text'
     };
 
     if (ctx.isChat && ctx.chatId) {

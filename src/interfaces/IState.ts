@@ -14,7 +14,8 @@ interface IState {
   }
   title: string
   text?: string
-  attachments: Array<IAttachment>
+  type: 'text' | 'photo' | 'voice' | 'document' | 'sticker'
+  attachments: Array<string>
 }
 
 export { IAttachment, IState };
