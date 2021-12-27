@@ -13,74 +13,46 @@ const messageUtility = new Message();
 emitter.on('message', async (state: IState) => {
   const message = messageUtility.form(state);
 
-  if (state.attachments.length === 0) {
-    queue.push(async () => {
-      const { message_id } = await api.sendMessage(chatId, message, { parse_mode: 'HTML' });
-    });
+  // // Only text message
+  // if (!state.attachments.length) {
+  //   queue.push(async () => {
+  //     const { message_id } = await api.sendMessage(chatId, message, { parse_mode: 'HTML' });
+  //   });
 
-    return;
-  }
+  //   return;
+  // }
 
-  interface IMedia {
-    type: 'photo' | 'video' | 'document' | 'audio'
-    media: string
-    caption?: string
-    parse_mode?: 'HTML' | 'Markdown' | 'MarkdownV2'
-  }
+  // const photoAttachments = messageUtility.formAttachments(state.attachments, 'photo', message);
+  // eslint-disable-next-line max-len
+  // const documentAttachments = messageUtility.formAttachments(state.attachments, 'document', message);
+  // const audioAttachments = messageUtility.formAttachments(state.attachments, 'audio', message);
 
-  const photoAttachments: Array<IMedia> = state.attachments
-    .filter((el) => el.type === 'photo')
-    .map((el) => ({
-      type: 'photo',
-      media: el.url
-    }));
+  // if (photoAttachments.length) {
+  //   queue.push(async () => {
+  //     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //     // @ts-ignore
+  //     await api.sendMediaGroup(chatId, photoAttachments);
+  //     // TODO: Add to mongodb
+  //   });
+  // }
 
-  if (photoAttachments.length) {
-    photoAttachments[0] = {
-      caption: message,
-      parse_mode: 'HTML',
-      ...photoAttachments[0]
-    };
-    queue.push(async () => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      await api.sendMediaGroup(chatId, photoAttachments);
-      // TODO: Add to mongodb
-    });
-  }
+  // if (documentAttachments.length) {
+  //   queue.push(async () => {
+  //     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //     // @ts-ignore
+  //     await api.sendMediaGroup(chatId, documentAttachments);
+  //     // TODO: Add to mongodb
+  //   });
+  // }
+
+  // if (audioAttachments.length) {
+  //   queue.push(async () => {
+  //     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //     // @ts-ignore
+  //     await api.sendMediaGroup(chatId, audioAttachments);
+  //     // TODO: Add to mongodb
+  //   });
+  // }
 });
-
-// emitter.on('text', (data) => {
-//   const { text } = data;
-//   api.sendMessage(config.telegram.id, text);
-// });
-
-// emitter.on('photo', (data) => {
-//   const { text, url } = data;
-//   api.sendPhoto(config.telegram.id, url, {
-//     caption: text
-//   });
-// });
-
-// emitter.on('voice', (data) => {
-//   const { text, url } = data;
-//   api.sendVoice(config.telegram.id, url, {
-//     caption: text
-//   });
-// });
-
-// emitter.on('doc', (data) => {
-//   const { text, url } = data;
-//   api.sendDocument(config.telegram.id, url, {
-//     caption: text
-//   });
-// });
-
-// emitter.on('sticker', (data) => {
-//   const { text, url } = data;
-//   api.sendPhoto(config.telegram.id, url, {
-//     caption: text
-//   });
-// });
 
 export default emitter;

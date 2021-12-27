@@ -1,9 +1,9 @@
 interface IAttachment {
-  type: 'photo' | 'voice' | 'document' | 'sticker' | 'video',
+  type: 'photo' | 'voice' | 'document' | 'sticker',
   url: string
 }
 
-export interface IState {
+interface IState {
   user: {
     userId: number,
     name: string
@@ -16,3 +16,5 @@ export interface IState {
   text?: string
   attachments: Array<IAttachment>
 }
+
+export { IAttachment, IState };

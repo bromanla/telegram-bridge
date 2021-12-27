@@ -1,4 +1,4 @@
-import { IState } from '@interfaces';
+import { IState, IAttachment, IMedia } from '@interfaces';
 
 class Message {
   // Previous message user id
@@ -30,6 +30,26 @@ class Message {
     this.userId = state.user.userId;
 
     return message;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  public formAttachments(attachments: Array<IAttachment>, type: IMedia['type'], message: string) {
+    const media: Array<IMedia> = attachments.filter((el) => el.type === type)
+      .map((el, i) => {
+        const acc: IMedia = {
+          type: 'photo',
+          media: el.url
+        };
+
+        if (i === 0) {
+          acc.caption = message;
+          acc.parse_mode = 'HTML';
+        }
+
+        return acc;
+      });
+
+    return media;
   }
 }
 

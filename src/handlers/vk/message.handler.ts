@@ -7,30 +7,49 @@ export default (bot: VK) => {
 
     if (ctx.hasText) state.text = ctx.text;
 
-    if (ctx.hasAttachments()) {
-      await ctx.loadMessagePayload();
+    if (ctx.hasReplyMessage || ctx.hasForwards) state.text += '\n[reply message]';
 
-      ctx.getAttachments('photo').forEach((image) => {
-        const url = image.largeSizeUrl;
-        state.attachments.push({ type: 'photo', url });
-      });
-
-      ctx.getAttachments('audio_message').forEach((voice) => {
-        const { url } = voice;
-        state.attachments.push({ type: 'voice', url });
-      });
-
-      ctx.getAttachments('doc').forEach((doc) => {
-        const { url } = doc;
-        state.attachments.push({ type: 'document', url });
-      });
-
-      ctx.getAttachments('sticker').forEach((sticker) => {
-        const url = sticker.imagesWithBackground.pop()?.url;
-        state.attachments.push({ type: 'sticker', url });
-      });
+    // Only text message
+    if (!ctx.hasAttachments()) {
+      state.type = 'text';
+      telegramSendService.emit('message', state);
+      return;
     }
 
-    telegramSendService.emit('message', state);
+    // FIXME
+
+    await ctx.loadMessagePayload();
+
+    if (ctx.getAttachments('wall').length) state.text += '\n[wall]';
+    if (ctx.getAttachments('poll').length) state.text += '\n[poll]';
+    if (ctx.getAttachments('gift').length) state.text += '\n[gift]';
+    if (ctx.getAttachments('audio').length) state.text += '\n[audio]';
+    if (ctx.getAttachments('video').length) state.text += '\n[video]';
+    if (ctx.getAttachments('story').length) state.text += '\n[story]';
+    if (ctx.getAttachments('sticker').length) state.text += '\n[sticker]';
+    if (ctx.getAttachments('graffiti').length) state.text += '\n[graffiti]';
+    if (ctx.getAttachments('wall_reply').length) state.text += '\n[wall_reply]';
+
+    const images = ctx.getAttachments('photo').map((image) => image.largeSizeUrl);
+
+    if (images.length) {
+      state.type = 'image';
+      state.attachments = images;
+      telegramSendService.emit('message', state);
+    }
+
+    const voices = ctx.getAttachments('audio_message').map((voice) => voice.url);
+
+    if (voices.length) {
+      state.type = 'voice';
+      state.attachments = voices;
+    }
+
+    const documents = ctx.getAttachments('doc').map((document) => document.url);
+
+    if (documents.length) {
+      state.type = 'document';
+      state.attachments = documents;
+    }
   });
 };
