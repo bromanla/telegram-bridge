@@ -1,11 +1,10 @@
-import { VK } from 'vk-io';
+import { VK, AttachmentTypeString, AttachmentType } from 'vk-io';
 import telegramSendService from '@services/telegram.send.service';
 
 export default (bot: VK) => {
   bot.updates.on('message_new', async (ctx) => {
     const { state } = ctx;
-
-    if (ctx.hasText) state.text = ctx.text;
+    state.text = ctx.hasText ? ctx.text : '';
 
     if (ctx.hasReplyMessage || ctx.hasForwards) state.text += '\n[reply message]';
 
@@ -20,7 +19,7 @@ export default (bot: VK) => {
     const images = ctx.getAttachments('photo').map((image) => image.largeSizeUrl);
 
     if (images.length) {
-      state.type = 'image';
+      state.type = 'photo';
       state.attachments = images;
       telegramSendService.emit('message', state);
     }
@@ -41,17 +40,39 @@ export default (bot: VK) => {
       telegramSendService.emit('message', state);
     }
 
-    if (ctx.getAttachments('wall').length) state.text += '\n[wall]';
-    if (ctx.getAttachments('poll').length) state.text += '\n[poll]';
-    if (ctx.getAttachments('gift').length) state.text += '\n[gift]';
-    if (ctx.getAttachments('audio').length) state.text += '\n[audio]';
-    if (ctx.getAttachments('video').length) state.text += '\n[video]';
-    if (ctx.getAttachments('story').length) state.text += '\n[story]';
-    if (ctx.getAttachments('sticker').length) state.text += '\n[sticker]';
-    if (ctx.getAttachments('graffiti').length) state.text += '\n[graffiti]';
-    if (ctx.getAttachments('wall_reply').length) state.text += '\n[wall_reply]';
+    const stickers = ctx.getAttachments('sticker').map((sticker) => sticker.imagesWithBackground.pop()?.url);
 
-    state.type = 'text';
-    telegramSendService.emit('message', state);
+    if (stickers.length) {
+      state.type = 'sticker';
+      state.attachments = stickers;
+      telegramSendService.emit('message', state);
+    }
+
+    const rawAttachments = [
+      AttachmentType.WALL,
+      AttachmentType.POLL,
+      AttachmentType.GIFT,
+      AttachmentType.AUDIO,
+      AttachmentType.VIDEO,
+      AttachmentType.STORY,
+      AttachmentType.GRAFFITI,
+      AttachmentType.WALL_REPLY
+    ];
+
+    const isRawAttachments = rawAttachments.reduce((res, type) => {
+      let acc = res;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      if (ctx.getAttachments(type).length) {
+        state.type = 'text';
+        state.text += `\n[${type}]`;
+        acc = true;
+      }
+      return acc;
+    }, false);
+
+    if (isRawAttachments) {
+      telegramSendService.emit('message', state);
+    }
   });
 };

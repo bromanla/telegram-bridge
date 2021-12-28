@@ -1,4 +1,4 @@
-import { IState } from '@interfaces';
+import { IState, IMedia } from '@interfaces';
 import config from '@config';
 import { api } from '@loaders/tg.loader';
 import EventEmitter from 'events';
@@ -12,49 +12,59 @@ const messageUtility = new Message();
 
 emitter.on('message', async (state: IState) => {
   const message = messageUtility.form(state);
+  console.log(state.attachments);
 
-  console.log(state);
+  // Only text message
+  if (state.type === 'text') {
+    queue.push(async () => {
+      await api.sendMessage(chatId, message, { parse_mode: 'HTML' });
+    });
+  }
 
-  // // Only text message
-  // if (!state.attachments.length) {
-  //   queue.push(async () => {
-  //     const { message_id } = await api.sendMessage(chatId, message, { parse_mode: 'HTML' });
-  //   });
+  if (state.type === 'document' || state.type === 'photo') {
+    state.attachments.forEach((url) => {
+      queue.push(async () => {
+        await api.sendDocument(chatId, url);
+      });
+    });
 
-  //   return;
-  // }
+    // const media = state.attachments.map((url, i) => {
+    //   const acc: IMedia = {
+    //     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //     // @ts-ignore
+    //     type: state.type,
+    //     media: url
+    //   };
 
-  // const photoAttachments = messageUtility.formAttachments(state.attachments, 'photo', message);
-  // eslint-disable-next-line max-len
-  // const documentAttachments = messageUtility.formAttachments(state.attachments, 'document', message);
-  // const audioAttachments = messageUtility.formAttachments(state.attachments, 'audio', message);
+    //   if (i === 0) {
+    //     acc.caption = message;
+    //     acc.parse_mode = 'HTML';
+    //   }
 
-  // if (photoAttachments.length) {
-  //   queue.push(async () => {
-  //     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //     // @ts-ignore
-  //     await api.sendMediaGroup(chatId, photoAttachments);
-  //     // TODO: Add to mongodb
-  //   });
-  // }
+    //   return acc;
+    // });
 
-  // if (documentAttachments.length) {
-  //   queue.push(async () => {
-  //     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //     // @ts-ignore
-  //     await api.sendMediaGroup(chatId, documentAttachments);
-  //     // TODO: Add to mongodb
-  //   });
-  // }
+    // queue.push(async () => {
+    //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //   // @ts-ignore
+    //   await api.sendMediaGroup(chatId, media);
+    //   // TODO: Add to mongodb
+    // });
+  }
 
-  // if (audioAttachments.length) {
-  //   queue.push(async () => {
-  //     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //     // @ts-ignore
-  //     await api.sendMediaGroup(chatId, audioAttachments);
-  //     // TODO: Add to mongodb
-  //   });
-  // }
+  if (state.type === 'sticker') {
+    const [url] = state.attachments;
+    queue.push(async () => {
+      await api.sendPhoto(chatId, url);
+    });
+  }
+
+  if (state.type === 'voice') {
+    const [url] = state.attachments;
+    queue.push(async () => {
+      await api.sendVoice(chatId, url);
+    });
+  }
 });
 
 export default emitter;

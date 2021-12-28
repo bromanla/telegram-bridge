@@ -1,5 +1,4 @@
 import EventEmitter from 'events';
-import config from '@config';
 import { getRandomId } from 'vk-io';
 import { api, upload } from '@loaders/vk.loader';
 
