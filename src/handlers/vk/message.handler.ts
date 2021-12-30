@@ -1,12 +1,13 @@
-import { VK, AttachmentTypeString, AttachmentType } from 'vk-io';
+import { VK, AttachmentType } from 'vk-io';
 import telegramSendService from '@services/telegram.send.service';
 
 export default (bot: VK) => {
   bot.updates.on('message_new', async (ctx) => {
     const { state } = ctx;
-    state.text = ctx.hasText ? ctx.text : '';
+    state.text = ctx.hasText ? `${ctx.text}\n` : '';
 
-    if (ctx.hasReplyMessage || ctx.hasForwards) state.text += '\n[reply message]';
+    if (ctx.hasGeo) state.text += '[geo]';
+    if (ctx.hasReplyMessage || ctx.hasForwards) state.text += '[reply message]';
 
     // Only text message
     if (!ctx.hasAttachments()) {
@@ -32,14 +33,6 @@ export default (bot: VK) => {
       telegramSendService.emit('message', state);
     }
 
-    const documents = ctx.getAttachments('doc').map((document) => document.url);
-
-    if (documents.length) {
-      state.type = 'document';
-      state.attachments = documents;
-      telegramSendService.emit('message', state);
-    }
-
     const stickers = ctx.getAttachments('sticker').map((sticker) => sticker.imagesWithBackground.pop()?.url);
 
     if (stickers.length) {
@@ -49,12 +42,13 @@ export default (bot: VK) => {
     }
 
     const rawAttachments = [
-      AttachmentType.WALL,
-      AttachmentType.POLL,
       AttachmentType.GIFT,
+      AttachmentType.POLL,
+      AttachmentType.WALL,
       AttachmentType.AUDIO,
-      AttachmentType.VIDEO,
       AttachmentType.STORY,
+      AttachmentType.VIDEO,
+      AttachmentType.DOCUMENT,
       AttachmentType.GRAFFITI,
       AttachmentType.WALL_REPLY
     ];
@@ -65,9 +59,10 @@ export default (bot: VK) => {
       // @ts-ignore
       if (ctx.getAttachments(type).length) {
         state.type = 'text';
-        state.text += `\n[${type}]`;
+        state.text += `[${type}]\n`;
         acc = true;
       }
+
       return acc;
     }, false);
 

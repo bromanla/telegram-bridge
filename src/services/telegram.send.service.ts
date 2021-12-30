@@ -12,44 +12,35 @@ const messageUtility = new Message();
 
 emitter.on('message', async (state: IState) => {
   const message = messageUtility.form(state);
-  console.log(state.attachments);
 
   // Only text message
   if (state.type === 'text') {
     queue.push(async () => {
-      await api.sendMessage(chatId, message, { parse_mode: 'HTML' });
+      const { message_id } = await api.sendMessage(chatId, message, { parse_mode: 'HTML' });
+      console.log(message_id);
     });
   }
 
-  if (state.type === 'document' || state.type === 'photo') {
-    state.attachments.forEach((url) => {
-      queue.push(async () => {
-        await api.sendDocument(chatId, url);
-      });
+  if (state.type === 'photo') {
+    const media = state.attachments.map((url, i) => {
+      const acc: IMedia = {
+        type: 'photo',
+        media: url
+      };
+
+      if (i === 0) {
+        acc.caption = message;
+        acc.parse_mode = 'HTML';
+      }
+
+      return acc;
     });
 
-    // const media = state.attachments.map((url, i) => {
-    //   const acc: IMedia = {
-    //     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //     // @ts-ignore
-    //     type: state.type,
-    //     media: url
-    //   };
-
-    //   if (i === 0) {
-    //     acc.caption = message;
-    //     acc.parse_mode = 'HTML';
-    //   }
-
-    //   return acc;
-    // });
-
-    // queue.push(async () => {
-    //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //   // @ts-ignore
-    //   await api.sendMediaGroup(chatId, media);
-    //   // TODO: Add to mongodb
-    // });
+    queue.push(async () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      await api.sendMediaGroup(chatId, media);
+    });
   }
 
   if (state.type === 'sticker') {

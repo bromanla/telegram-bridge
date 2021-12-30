@@ -1,9 +1,4 @@
-interface IAttachment {
-  type: 'photo' | 'voice' | 'document' | 'sticker',
-  url: string
-}
-
-interface IState {
+export interface IState {
   user: {
     userId: number,
     name: string
@@ -17,5 +12,3 @@ interface IState {
   type: 'text' | 'photo' | 'voice' | 'document' | 'sticker'
   attachments: Array<string>
 }
-
-export { IAttachment, IState };
