@@ -1,4 +1,4 @@
 export interface IMessageModel {
   chatId: number
-  title: string
+  messageId: number
 }

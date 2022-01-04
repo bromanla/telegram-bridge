@@ -8,7 +8,6 @@ export interface IState {
     title: string
   }
   title: string
-  text?: string
-  type: 'text' | 'photo' | 'voice' | 'document' | 'sticker'
+  text: string
   attachments: Array<string>
 }

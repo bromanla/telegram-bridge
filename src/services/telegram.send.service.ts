@@ -1,4 +1,4 @@
-import { IState, IMedia } from '@interfaces';
+import { IState } from '@interfaces';
 import config from '@config';
 import { api } from '@loaders/tg.loader';
 import EventEmitter from 'events';
@@ -10,52 +10,49 @@ const emitter = new EventEmitter();
 const queue = new Queue();
 const messageUtility = new Message();
 
-emitter.on('message', async (state: IState) => {
+emitter.on('text', async (state: IState) => {
   const message = messageUtility.form(state);
 
-  // Only text message
-  if (state.type === 'text') {
-    queue.push(async () => {
-      const { message_id } = await api.sendMessage(chatId, message, { parse_mode: 'HTML' });
-      console.log(message_id);
-    });
-  }
+  queue.push(async () => {
+    const { message_id } = await api.sendMessage(chatId, message, { parse_mode: 'HTML' });
 
-  if (state.type === 'photo') {
-    const media = state.attachments.map((url, i) => {
-      const acc: IMedia = {
-        type: 'photo',
-        media: url
-      };
+    console.log(message_id);
+  });
+});
 
-      if (i === 0) {
-        acc.caption = message;
-        acc.parse_mode = 'HTML';
-      }
+emitter.on('photo', async (state: IState) => {
+  const mediaGroup = messageUtility.formPhotosGroup(state);
 
-      return acc;
-    });
+  queue.push(async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const sentMessages = await api.sendMediaGroup(chatId, mediaGroup);
+    const message_ids = sentMessages.map((el) => el.message_id);
 
-    queue.push(async () => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      await api.sendMediaGroup(chatId, media);
-    });
-  }
+    console.log(message_ids);
+  });
+});
 
-  if (state.type === 'sticker') {
-    const [url] = state.attachments;
-    queue.push(async () => {
-      await api.sendPhoto(chatId, url);
-    });
-  }
+emitter.on('voice', async (state: IState) => {
+  const message = messageUtility.form(state);
+  const [url] = state.attachments;
 
-  if (state.type === 'voice') {
-    const [url] = state.attachments;
-    queue.push(async () => {
-      await api.sendVoice(chatId, url);
-    });
-  }
+  queue.push(async () => {
+    const { message_id } = await api.sendVoice(chatId, url, { caption: message, parse_mode: 'HTML' });
+
+    console.log(message_id);
+  });
+});
+
+emitter.on('sticker', async (state: IState) => {
+  const message = messageUtility.form(state);
+  const [url] = state.attachments;
+
+  queue.push(async () => {
+    const { message_id } = await api.sendPhoto(chatId, url, { caption: message, parse_mode: 'HTML' });
+
+    console.log(message_id);
+  });
 });
 
 export default emitter;

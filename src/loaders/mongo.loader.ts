@@ -1,10 +1,6 @@
 import config from '@config';
-import { IUserModel, IChatModel } from '@interfaces';
+import { IUserModel, IChatModel, IMessageModel } from '@interfaces';
 import { connect, Schema, model } from 'mongoose';
-
-const loader = async () => {
-  await connect(config.mongo.uri);
-};
 
 const usersSchema = new Schema<IUserModel>({
   name: {
@@ -36,7 +32,25 @@ const chatSchema = new Schema<IChatModel>({
   }
 });
 
+const messageSchema = new Schema<IMessageModel>({
+  chatId: {
+    type: Number,
+    required: true
+  },
+  messageId: {
+    type: Number,
+    required: true
+  }
+});
+
 const UserModel = model<IUserModel>('User', usersSchema);
 const ChatModel = model<IChatModel>('Chat', chatSchema);
+const MessageModel = model<IMessageModel>('Message', messageSchema);
 
-export { loader, UserModel, ChatModel };
+const loader = async () => {
+  await connect(config.mongo.uri);
+};
+
+export {
+  loader, UserModel, ChatModel, MessageModel
+};

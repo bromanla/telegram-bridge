@@ -38,4 +38,9 @@ const getUserName = async (userId: number) => {
   };
 };
 
-export { getUserName, getChatTitle };
+const getGroupName = async (groupId: number) => {
+  const name = await api.groups.getById({ group_id: String(groupId) });
+  return name;
+};
+
+export { getUserName, getChatTitle, getGroupName };

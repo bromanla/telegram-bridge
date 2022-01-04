@@ -1,4 +1,4 @@
-import { IState } from '@interfaces';
+import { IState, IMedia } from '@interfaces';
 
 class Message {
   // Previous message user id
@@ -30,6 +30,26 @@ class Message {
     this.userId = state.user.userId;
 
     return message;
+  }
+
+  public formPhotosGroup(state: IState) {
+    const message = this.form(state);
+
+    const media = state.attachments.map((url, i) => {
+      const acc: IMedia = {
+        type: 'photo',
+        media: url
+      };
+
+      if (i === 0) {
+        acc.caption = message;
+        acc.parse_mode = 'HTML';
+      }
+
+      return acc;
+    });
+
+    return media;
   }
 }
 
