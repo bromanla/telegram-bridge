@@ -6,7 +6,7 @@ const emitter = new EventEmitter();
 
 emitter.on('text', (data: { id: number, text: string }) => {
   api.messages.send({
-    user_id: data.id,
+    peer_id: data.id,
     message: data.text,
     random_id: getRandomId()
   });
@@ -18,7 +18,7 @@ emitter.on('voice', async (data) => {
   const attachment = await upload.audioMessage({ source: { value: href } });
 
   await api.messages.send({
-    user_id: id,
+    peer_id: id,
     attachment,
     random_id: getRandomId()
   });
@@ -30,7 +30,7 @@ emitter.on('photo', async (data) => {
   const attachment = await upload.messagePhoto({ source: { value: href } });
 
   await api.messages.send({
-    user_id: id,
+    peer_id: id,
     attachment,
     random_id: getRandomId()
   });
@@ -42,7 +42,7 @@ emitter.on('document', async (data) => {
   const attachment = await upload.messageDocument({ source: { value: href } });
 
   await api.messages.send({
-    user_id: id,
+    peer_id: id,
     attachment,
     random_id: getRandomId()
   });
@@ -54,7 +54,7 @@ emitter.on('sticker', async (data) => {
   const attachment = await upload.messageGraffiti({ source: { value: href } });
 
   await api.messages.send({
-    user_id: id,
+    peer_id: id,
     attachment,
     random_id: getRandomId()
   });

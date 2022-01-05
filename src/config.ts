@@ -13,7 +13,7 @@ if (error) {
 const settingsPath = resolve(__dirname, '../', 'settings.json');
 const settings = JSON.parse(readFileSync(settingsPath, 'utf8'));
 
-const ConfigInstance: IConfig = {
+const config: IConfig = {
   telegram: {
     token: process.env.TG_TOKEN ?? '',
     id: Number(process.env.TG_ID),
@@ -31,4 +31,4 @@ const ConfigInstance: IConfig = {
   silence: false
 };
 
-export default ConfigInstance;
+export default config;

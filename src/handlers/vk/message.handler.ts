@@ -1,7 +1,7 @@
 import { VK, AttachmentType } from 'vk-io';
 import { IState } from '@interfaces';
-import telegramSendService from '@services/telegram.send.service';
-import { getUserName, getChatName, getGroupName } from '@services/vk.title.service';
+import telegramSendService from '@services/tg-send.service';
+import { getUserName, getChatName, getGroupName } from '@services/vk-title.service';
 
 const rawAttachments = [
   AttachmentType.GIFT,
@@ -31,7 +31,7 @@ export default (bot: VK) => {
     if (ctx.isChat && ctx.chatId) {
       const chat = await getChatName(ctx.chatId);
       state.chat = chat;
-      state.senderId = ctx.chatId;
+      state.senderId = ctx.chatId + 2000000000;
       state.title += ` [${chat.name}]`;
     }
 

@@ -24,7 +24,8 @@
     "comma-dangle": ["error", "never"],
     "@typescript-eslint/comma-dangle": ["error", "never"],
     "import/no-cycle": "off",
-    "@typescript-eslint/naming-convention": "off"
+    "@typescript-eslint/naming-convention": "off",
+    "@typescript-eslint/ban-ts-comment": "off"
 
   },
   "settings": {

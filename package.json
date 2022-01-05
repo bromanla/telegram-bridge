@@ -1,6 +1,6 @@
 {
   "name": "without-social",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "When you need to be alone",
   "main": "./src/index.ts",
   "author": "Roman <bromanla.json@gmail.com>",

@@ -1,84 +1,63 @@
 import { Composer } from 'telegraf';
-import config from '@config';
-import VkEmitter from '@services/vk.send.service';
+import vkSendService from '@services/vk-send.service';
+import TgMessageUtility from 'utils/tg-message.utility';
+import ApiError from 'utils/tg-error.utility';
 
 const bot = new Composer();
+const tgMessageUtility = new TgMessageUtility();
 
 bot.on('message', async (ctx, next) => {
-  // Solving the problem of telegraf (crutch)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { message }: any = ctx;
+  const { message } = ctx;
 
-  if (message?.reply_to_message) {
-    // TODO: reply to message handler
-    console.log('Пересланное');
-    return;
-  }
+  // @ts-ignore
+  if (message?.forward_from || message?.forward_date) throw new ApiError('Forwarded messages are not supported');
 
-  if (config.vk.selected === -1) {
-    await ctx.reply('User not selected');
-    return;
-  }
+  await tgMessageUtility.identificationRecipient(message);
 
   await next();
 });
 
 bot.on('text', async (ctx) => {
+  const id = tgMessageUtility.recipient;
   const { text } = ctx.message;
-  VkEmitter.emit('text', {
-    id: config.vk.selected,
-    text
-  });
+
+  vkSendService.emit('text', { id, text });
 });
 
 bot.on('voice', async (ctx) => {
+  const id = tgMessageUtility.recipient;
   const fileId = ctx.message.voice.file_id;
   const { href } = await ctx.telegram.getFileLink(fileId);
 
-  VkEmitter.emit('voice', {
-    id: config.vk.selected,
-    href
-  });
+  vkSendService.emit('voice', { id, href });
 });
 
 bot.on('photo', async (ctx) => {
+  const id = tgMessageUtility.recipient;
   const fileId = ctx.message.photo.pop()?.file_id;
 
-  if (!fileId) {
-    // Todo catch
-    return;
-  }
+  if (!fileId) throw new ApiError('Failed to get fileId');
 
   const { href } = await ctx.telegram.getFileLink(fileId);
-  VkEmitter.emit('photo', {
-    id: config.vk.selected,
-    href
-  });
+  vkSendService.emit('photo', { id, href });
 });
 
 bot.on('document', async (ctx) => {
+  const id = tgMessageUtility.recipient;
   const fileId = ctx.message.document.file_id;
 
   const { href } = await ctx.telegram.getFileLink(fileId);
-  VkEmitter.emit('document', {
-    id: config.vk.selected,
-    href
-  });
+  vkSendService.emit('document', { id, href });
 });
 
 bot.on('sticker', async (ctx) => {
+  const id = tgMessageUtility.recipient;
   const fileId = ctx.message.sticker.thumb?.file_id;
 
-  if (!fileId) {
-    // Todo catch
-    return;
-  }
+  if (!fileId) throw new ApiError('Failed to get fileId');
 
   const { href } = await ctx.telegram.getFileLink(fileId);
-  VkEmitter.emit('sticker', {
-    id: config.vk.selected,
-    href
-  });
+  vkSendService.emit('sticker', { id, href });
 });
 
 export default bot;
