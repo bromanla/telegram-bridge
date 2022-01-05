@@ -1,13 +1,14 @@
 export interface IState {
-  user: {
-    userId: number,
+  senderId: number
+  title: string
+  text: string
+  sender: {
+    id: number
     name: string
   }
   chat?: {
-    chatId: number,
-    title: string
+    id: number,
+    name: string
   }
-  title: string
-  text: string
   attachments: Array<string>
 }

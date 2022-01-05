@@ -1,6 +1,7 @@
-import { IState } from '@interfaces';
+import { IState, IMessage } from '@interfaces';
 import config from '@config';
 import { api } from '@loaders/tg.loader';
+import { MessageModel } from '@loaders/mongo.loader';
 import EventEmitter from 'events';
 import Queue from 'utils/queue.utility';
 import Message from 'utils/vk.message.utility';
@@ -15,8 +16,7 @@ emitter.on('text', async (state: IState) => {
 
   queue.push(async () => {
     const { message_id } = await api.sendMessage(chatId, message, { parse_mode: 'HTML' });
-
-    console.log(message_id);
+    await new MessageModel({ chatId: state.senderId, messageId: message_id }).save();
   });
 });
 
@@ -27,9 +27,10 @@ emitter.on('photo', async (state: IState) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const sentMessages = await api.sendMediaGroup(chatId, mediaGroup);
-    const message_ids = sentMessages.map((el) => el.message_id);
-
-    console.log(message_ids);
+    const entities: Array<IMessage> = sentMessages.map((el) => (
+      { chatId: state.senderId, messageId: el.message_id }
+    ));
+    await MessageModel.insertMany(entities);
   });
 });
 
@@ -39,8 +40,7 @@ emitter.on('voice', async (state: IState) => {
 
   queue.push(async () => {
     const { message_id } = await api.sendVoice(chatId, url, { caption: message, parse_mode: 'HTML' });
-
-    console.log(message_id);
+    await new MessageModel({ chatId: state.senderId, messageId: message_id }).save();
   });
 });
 
@@ -50,8 +50,7 @@ emitter.on('sticker', async (state: IState) => {
 
   queue.push(async () => {
     const { message_id } = await api.sendPhoto(chatId, url, { caption: message, parse_mode: 'HTML' });
-
-    console.log(message_id);
+    await new MessageModel({ chatId: state.senderId, messageId: message_id }).save();
   });
 });
 

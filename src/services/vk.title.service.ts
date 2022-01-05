@@ -1,46 +1,57 @@
-import { UserModel, ChatModel } from '@loaders/mongo.loader';
+import { ChatModel } from '@loaders/mongo.loader';
 import { api } from '@loaders/vk.loader';
 
-const getChatTitle = async (chatId: number) => {
-  let chat = await ChatModel.findOne({ chatId }).lean();
+const getChatName = async (chatId: number) => {
+  let chat = await ChatModel.findOne({ chatId, type: 'chat' }).lean();
 
   if (!chat) {
     // vk-io 4.4.0 bug api type
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const { title } = await api.messages.getChat({ chat_id: chatId });
-    const entity = new ChatModel({ chatId, title });
+    const { title: name } = await api.messages.getChat({ chat_id: chatId });
+    const entity = new ChatModel({ chatId, name, type: 'chat' });
     await entity.save();
     chat = entity.toObject();
   }
 
   return {
-    chatId: chat.chatId,
-    title: chat.title
+    id: chat.chatId,
+    name: chat.name
   };
 };
 
-const getUserName = async (userId: number) => {
-  let user = await UserModel.findOne({ userId }).lean();
+const getUserName = async (chatId: number) => {
+  let user = await ChatModel.findOne({ chatId, type: 'user' }).lean();
 
   if (!user) {
-    const [{ first_name, last_name }] = await api.users.get({ user_ids: String(userId) });
+    const [{ first_name, last_name }] = await api.users.get({ user_ids: String(chatId) });
     const name = `${first_name} ${last_name}`;
 
-    const entity = new UserModel({ userId, name, favorite: false });
+    const entity = new ChatModel({ chatId, name, type: 'user' });
     await entity.save();
     user = entity.toObject();
   }
 
   return {
-    userId: user.userId,
+    id: user.chatId,
     name: user.name
   };
 };
 
-const getGroupName = async (groupId: number) => {
-  const name = await api.groups.getById({ group_id: String(groupId) });
-  return name;
+const getGroupName = async (chatId: number) => {
+  let group = await ChatModel.findOne({ chatId, type: 'group' }).lean();
+
+  if (!group) {
+    const [{ name }] = await api.groups.getById({ group_id: String(Math.abs(chatId)) });
+    const entity = new ChatModel({ chatId, name, type: 'group' });
+    await entity.save();
+    group = entity.toObject();
+  }
+
+  return {
+    id: group.chatId,
+    name: group.name
+  };
 };
 
-export { getUserName, getChatTitle, getGroupName };
+export { getUserName, getChatName, getGroupName };

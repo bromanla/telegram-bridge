@@ -1,7 +1,7 @@
 import { VK, AttachmentType } from 'vk-io';
 import { IState } from '@interfaces';
 import telegramSendService from '@services/telegram.send.service';
-import { getUserName, getChatTitle, getGroupName } from '@services/vk.title.service';
+import { getUserName, getChatName, getGroupName } from '@services/vk.title.service';
 
 const rawAttachments = [
   AttachmentType.GIFT,
@@ -17,29 +17,22 @@ const rawAttachments = [
 
 export default (bot: VK) => {
   bot.updates.on('message_new', async (ctx) => {
-    if (ctx.isGroup) {
-      const group = await getGroupName(ctx.senderId);
-      console.log(group);
-    }
-
-    // if (ctx.isChat)
-
-    // console.log(ctx.isGroup);
-    // console.log(ctx.senderId);
-
-    const user = await getUserName(ctx.senderId);
+    // user or group only (filter)
+    const sender = ctx.isUser ? await getUserName(ctx.senderId) : await getGroupName(ctx.senderId);
 
     const state: IState = {
-      user,
-      title: `<b>${user.name}</b>`,
+      sender,
+      senderId: ctx.senderId,
+      title: `<b>${sender.name}</b>`,
       text: '',
       attachments: []
     };
 
     if (ctx.isChat && ctx.chatId) {
-      const chat = await getChatTitle(ctx.chatId);
+      const chat = await getChatName(ctx.chatId);
       state.chat = chat;
-      state.title += ` [${chat.title}]`;
+      state.senderId = ctx.chatId;
+      state.title += ` [${chat.name}]`;
     }
 
     if (ctx.hasText) state.text = `${ctx.text}\n`;

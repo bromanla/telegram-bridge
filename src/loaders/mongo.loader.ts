@@ -1,38 +1,30 @@
 import config from '@config';
-import { IUserModel, IChatModel, IMessageModel } from '@interfaces';
-import { connect, Schema, model } from 'mongoose';
+import { IChat, IMessage } from '@interfaces';
+import { Schema, connect, model } from 'mongoose';
 
-const usersSchema = new Schema<IUserModel>({
+const chatSchema = new Schema<IChat>({
   name: {
     type: String,
-    required: true,
-    unique: true
-  },
-  userId: {
-    type: Number,
-    required: true,
-    unique: true
-  },
-  favorite: {
-    type: Boolean,
     required: true
-  }
-});
-
-const chatSchema = new Schema<IChatModel>({
-  title: {
-    type: String,
-    required: true,
-    unique: true
   },
   chatId: {
     type: Number,
     required: true,
     unique: true
+  },
+  type: {
+    type: String,
+    enum: ['user', 'chat', 'group'],
+    required: true
+  },
+  favorite: {
+    type: Boolean,
+    default: false,
+    required: true
   }
 });
 
-const messageSchema = new Schema<IMessageModel>({
+const messageSchema = new Schema<IMessage>({
   chatId: {
     type: Number,
     required: true
@@ -43,14 +35,11 @@ const messageSchema = new Schema<IMessageModel>({
   }
 });
 
-const UserModel = model<IUserModel>('User', usersSchema);
-const ChatModel = model<IChatModel>('Chat', chatSchema);
-const MessageModel = model<IMessageModel>('Message', messageSchema);
+const ChatModel = model<IChat>('Chat', chatSchema);
+const MessageModel = model<IMessage>('Message', messageSchema);
 
 const loader = async () => {
   await connect(config.mongo.uri);
 };
 
-export {
-  loader, UserModel, ChatModel, MessageModel
-};
+export { loader, ChatModel, MessageModel };

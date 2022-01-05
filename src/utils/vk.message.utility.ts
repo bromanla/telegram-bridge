@@ -2,32 +2,32 @@ import { IState, IMedia } from '@interfaces';
 
 class Message {
   // Previous message user id
-  private userId = 0;
+  private senderId = 0;
 
   // Previous message chat id
   private chatId = 0;
 
   public form(state: IState) {
     let message: string;
-    const text = state?.text ?? '';
+    const { text } = state;
 
     // Chat message or private message
     if (state?.chat) {
       // The last message was sent from the same as from the same user
-      message = this.userId === state.user.userId
-        && this.chatId === state.chat.chatId
+      message = this.senderId === state.sender.id
+        && this.chatId === state.chat.id
         ? text
         : `${state.title}\n${text}`;
 
-      this.chatId = state.chat.chatId;
+      this.chatId = state.chat.id;
     } else {
       // A previous message was sent from the same user
-      message = this.userId === state.user.userId
+      message = this.senderId === state.sender.id
         ? text
         : `${state.title}\n${text}`;
     }
 
-    this.userId = state.user.userId;
+    this.senderId = state.sender.id;
 
     return message;
   }
