@@ -1,7 +1,7 @@
 import { Composer } from 'telegraf';
 import vkSendService from '@services/vk-send.service';
-import TgMessageUtility from 'utils/tg-message.utility';
-import ApiError from 'utils/tg-error.utility';
+import TgMessageUtility from '@utils/tg-message.utility';
+import ApiError from '@utils/tg-error.utility';
 
 const bot = new Composer();
 const tgMessageUtility = new TgMessageUtility();

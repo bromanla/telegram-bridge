@@ -3,8 +3,8 @@ import config from '@config';
 import { api } from '@loaders/tg.loader';
 import { MessageModel } from '@loaders/mongo.loader';
 import EventEmitter from 'events';
-import Queue from 'utils/queue.utility';
-import Message from 'utils/vk-message.utility';
+import Queue from '@utils/queue.utility';
+import Message from '@utils/vk-message.utility';
 
 const chatId = config.telegram.id;
 const emitter = new EventEmitter();

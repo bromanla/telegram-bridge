@@ -1,6 +1,6 @@
 import { api } from '@loaders/tg.loader';
 import config from '@config';
-import ApiError from 'utils/tg-error.utility';
+import ApiError from '@utils/tg-error.utility';
 import logger from '@logger';
 
 export default (e: ApiError | Error) => {
