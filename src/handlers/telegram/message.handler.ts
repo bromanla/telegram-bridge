@@ -52,7 +52,9 @@ bot.on('document', async (ctx) => {
 
 bot.on('sticker', async (ctx) => {
   const id = tgMessageUtility.recipient;
-  const fileId = ctx.message.sticker.file_id;
+  const fileId = ctx.message.sticker.is_animated
+    ? ctx.message.sticker.thumb?.file_id
+    : ctx.message.sticker.file_id;
 
   if (!fileId) throw new ApiError('Failed to get fileId');
 
