@@ -19,8 +19,7 @@ const config: IConfig = {
   mongo: {
     uri: process.env.MONGO_URI ?? ''
   },
-  debug: process.env.NODE_ENV !== 'production',
-  silence: false
+  debug: process.env.NODE_ENV !== 'production'
 };
 
 export default config;

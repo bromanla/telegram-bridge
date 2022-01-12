@@ -15,6 +15,5 @@ export interface IConfig {
   mongo: {
     uri: string
   }
-  silence: boolean
   debug: boolean
 }
