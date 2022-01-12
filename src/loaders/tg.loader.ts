@@ -13,7 +13,8 @@ const loader = async () => {
     { command: 'users', description: 'Show favorite users' },
     { command: 'clear', description: 'Clear selected user' },
     { command: 'select', description: 'Switch dialog to this user' },
-    { command: 'favorite', description: 'Add user to favorites' }
+    { command: 'favorite', description: 'Add user to favorites' },
+    { command: 'edit', description: 'Edit favorite users' }
   ]);
 
   // Get pinned message

@@ -29,9 +29,9 @@ export default (bot: VK) => {
     };
 
     if (ctx.isChat && ctx.chatId) {
-      const chat = await getChatName(ctx.chatId + 2000000000);
+      const chat = await getChatName(ctx.chatId);
       state.chat = chat;
-      state.senderId = ctx.chatId + 2000000000;
+      state.senderId = chat.id;
       state.title += ` [${chat.name}]`;
     }
 

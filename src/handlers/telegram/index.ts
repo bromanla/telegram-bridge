@@ -1,13 +1,17 @@
 import startHandler from './start.handler';
-import usersHandler from './users.handler';
-import clearHandler from './clear.handler';
-import silenceHandler from './silence.handler';
+import showFavoritesHandler from './show-favorites.handler';
+import editFavoritesHandler from './edit-favorites.handler';
+import addFavoriteHandler from './add-favorites.handler';
+import selectUserHandler from './select-user.handler';
+import clearUserHandler from './clear-user.handler';
 import messageHandler from './message.handler';
 
 export default [
   startHandler,
-  usersHandler,
-  clearHandler,
-  silenceHandler,
+  showFavoritesHandler,
+  editFavoritesHandler,
+  addFavoriteHandler,
+  selectUserHandler,
+  clearUserHandler,
   messageHandler
 ];

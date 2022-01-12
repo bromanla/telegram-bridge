@@ -1,13 +1,14 @@
 import { ChatModel } from '@loaders/mongo.loader';
 import { api } from '@loaders/vk.loader';
 
-const getChatName = async (chatId: number) => {
+const getChatName = async (unformattedChatId: number) => {
+  const chatId = unformattedChatId + 2000000000;
   let chat = await ChatModel.findOne({ chatId, type: 'chat' }).lean();
 
   if (!chat) {
     // vk-io 4.4.0 bug api type
     // @ts-ignore
-    const { title: name } = await api.messages.getChat({ chat_id: chatId });
+    const { title: name } = await api.messages.getChat({ chat_id: unformattedChatId });
     const entity = new ChatModel({ chatId, name, type: 'chat' });
     await entity.save();
     chat = entity.toObject();
