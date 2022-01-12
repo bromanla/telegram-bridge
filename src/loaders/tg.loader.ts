@@ -2,13 +2,19 @@ import { Telegraf } from 'telegraf';
 import config from '@config';
 import tgErrorService from '@services/tg-error.service';
 import handlers from '../handlers/telegram';
+import { ChatModel } from './mongo.loader';
 
 const bot = new Telegraf(config.telegram.token);
 const api = bot.telegram;
 
 const loader = async () => {
   // Set available commands to the bot
-  await bot.telegram.setMyCommands(config.telegram.commands);
+  await bot.telegram.setMyCommands([
+    { command: 'users', description: 'Show favorite users' },
+    { command: 'clear', description: 'Clear selected user' },
+    { command: 'select', description: 'Switch dialog to this user' },
+    { command: 'favorite', description: 'Add user to favorites' }
+  ]);
 
   // Get pinned message
   const chat = await bot.telegram.getChat(config.telegram.id);
@@ -16,8 +22,8 @@ const loader = async () => {
   if (chat?.pinned_message) {
     // @ts-ignore
     const name: string = chat.pinned_message.text;
-    const user = config.vk.users.find(((el) => el.name === name));
-    if (user) config.vk.selected = user.id;
+    const user = await ChatModel.findOne({ name }).lean();
+    if (user) config.vk.selected = user.chatId;
   }
 
   // Error handler

@@ -29,7 +29,7 @@ export default (bot: VK) => {
     };
 
     if (ctx.isChat && ctx.chatId) {
-      const chat = await getChatName(ctx.chatId);
+      const chat = await getChatName(ctx.chatId + 2000000000);
       state.chat = chat;
       state.senderId = ctx.chatId + 2000000000;
       state.title += ` [${chat.name}]`;
@@ -58,7 +58,6 @@ export default (bot: VK) => {
 
     const isRawAttachments = rawAttachments.reduce((res, type) => {
       let acc = res;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       if (ctx.getAttachments(type).length) {
         state.text += `[${type}]\n`;

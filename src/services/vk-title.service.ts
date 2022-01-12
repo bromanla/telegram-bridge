@@ -6,7 +6,6 @@ const getChatName = async (chatId: number) => {
 
   if (!chat) {
     // vk-io 4.4.0 bug api type
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const { title: name } = await api.messages.getChat({ chat_id: chatId });
     const entity = new ChatModel({ chatId, name, type: 'chat' });

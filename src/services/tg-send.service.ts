@@ -24,7 +24,6 @@ emitter.on('photo', async (state: IState) => {
   const mediaGroup = messageUtility.formPhotosGroup(state);
 
   queue.push(async () => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const sentMessages = await api.sendMediaGroup(chatId, mediaGroup);
     const entities: Array<IMessage> = sentMessages.map((el) => (
