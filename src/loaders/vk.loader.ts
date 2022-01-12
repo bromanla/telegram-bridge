@@ -10,7 +10,7 @@ const loader = async () => {
   // Guard
   bot.updates.on('message_new', async (ctx, next) => {
     // Incoming messages only
-    // if (!ctx.isInbox) return;
+    if (!ctx.isInbox) return;
 
     await next();
   });
