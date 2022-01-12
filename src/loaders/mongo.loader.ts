@@ -32,6 +32,11 @@ const messageSchema = new Schema<IMessage>({
   messageId: {
     type: Number,
     required: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    expires: '10d'
   }
 });
 
