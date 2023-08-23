@@ -1,17 +1,11 @@
-## Development
+## Build
 
->We use node version 16+
+> Make environment variables (see .env.example)
 
-In order to run the project, clone the repository:
-
-```bash
-git clone https://github.com/bromanla/without-social.git
-```
-
-Download the dependencies.
+Download the dependencies:
 
 ```bash
-npm install
+npm ci
 ```
 
 To run compile the Typescript:
@@ -20,8 +14,14 @@ To run compile the Typescript:
 npm run build
 ```
 
+Remove dependencies for development:
+
+```bash
+npm ci --omit=dev
+```
+
 To run the application:
 
 ```bash
-npm start
+npm run start
 ```

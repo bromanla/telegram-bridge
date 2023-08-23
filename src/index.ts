@@ -1,17 +1,20 @@
-import logger from '@logger';
-import { loader as tgLoader } from '@loaders/tg.loader';
-import { loader as vkLoader } from '@loaders/vk.loader';
-import { loader as mongoLoader } from '@loaders/mongo.loader';
+import '@total-typescript/ts-reset';
+import { PrismaClient } from '@prisma/client';
+import { VkModule } from '#src/module/vk/vk.module.js';
+import { EventService } from '#src/service/event.service.js';
+import { LoggerService } from '#src/service/logger.service.js';
+import { ConfigService } from '#src/service/config.service.js';
+import { TelegramModule } from '#src/module/telegram/telegram.module.js';
 
-const launch = async () => {
-  await mongoLoader();
-  logger.info('mongo launched');
+const emitter = new EventService();
+const config = new ConfigService();
+const logger = new LoggerService(config);
+const database = new PrismaClient();
 
-  await tgLoader();
-  logger.info('telegram launched');
+const vk = new VkModule(logger, config, emitter, database);
+const telegram = new TelegramModule(logger, config, emitter, database);
 
-  await vkLoader();
-  logger.info('vk launched');
-};
+await vk.launch();
+await telegram.launch();
 
-launch();
+logger.info(`node: ${process.version}`);
