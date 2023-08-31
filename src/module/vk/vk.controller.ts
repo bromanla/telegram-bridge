@@ -1,11 +1,16 @@
-import type { LoggerService } from '#src/service/logger.service.js';
+import { LoggerInstance } from '#src/common/logger.instance.js';
+import { AttachmentType } from 'vk-io';
+
 import type { VkStore } from './vk.store.js';
 import type { VkService } from './vk.service.js';
 import type { NextFunction, MessageContext } from './vk.type.js';
+import type { EventService } from '#src/service/event.service.js';
 
 export class VkController {
+  private logger = new LoggerInstance();
+
   constructor(
-    private readonly logger: LoggerService,
+    private readonly emitter: EventService,
     private readonly store: VkStore,
     private readonly service: VkService,
   ) {
@@ -19,7 +24,7 @@ export class VkController {
   private inboxMiddleware(ctx: MessageContext, next: NextFunction) {
     ctx.state.handler = 'telegram';
 
-    return ctx.isInbox ? undefined : next();
+    return ctx.isInbox ? next() : undefined;
   }
 
   /* User identification */
@@ -81,16 +86,96 @@ export class VkController {
     ctx.state.text = ctx.text;
 
     /* Send only text message */
-    const hasAttachments = this.service.handleText(ctx);
+    const hasAttachments = this.textHandler(ctx);
     if (!hasAttachments) return;
 
     // TODO: implement nested messages
     await ctx.loadMessagePayload();
 
-    this.service.handleImages(ctx);
-    this.service.handleVoices(ctx);
-    this.service.handleStickers(ctx);
+    this.imagesHandler(ctx);
+    this.voiceHandler(ctx);
+    this.stickerHandler(ctx);
 
-    this.service.handleUnprocessed(ctx);
+    this.unprocessedHandler(ctx);
+  }
+
+  private textHandler(ctx: MessageContext) {
+    const text = ctx.text;
+    const hasAttachments = ctx.hasAttachments();
+
+    /* Send only text message */
+    if (!hasAttachments && text) {
+      this.emitter.emit('telegram:sendText', { text, ...ctx.state });
+    }
+
+    ctx.state.text = text;
+    return hasAttachments;
+  }
+
+  public imagesHandler(ctx: MessageContext) {
+    const images = ctx
+      .getAttachments(AttachmentType.PHOTO)
+      .map((image) => image.largeSizeUrl)
+      .filter(Boolean);
+
+    if (images.length)
+      this.emitter.emit('telegram:sendImage', {
+        url: images,
+        ...ctx.state,
+      });
+  }
+
+  private voiceHandler(ctx: MessageContext) {
+    const [voice] = ctx
+      .getAttachments(AttachmentType.AUDIO_MESSAGE)
+      .map((voice) => voice.oggUrl)
+      .filter(Boolean);
+
+    if (voice)
+      this.emitter.emit('telegram:sendVoice', {
+        url: voice,
+        ...ctx.state,
+      });
+  }
+
+  private stickerHandler(ctx: MessageContext) {
+    const [sticker] = ctx
+      .getAttachments(AttachmentType.STICKER)
+      .map((sticker) => sticker.imagesWithBackground.pop()?.url)
+      .filter(Boolean);
+
+    if (sticker)
+      this.emitter.emit('telegram:sendSticker', {
+        url: sticker,
+        ...ctx.state,
+      });
+  }
+
+  private unprocessedHandler(ctx: MessageContext) {
+    const unprocessedAttachments: string[] = [];
+    for (const type of Object.values(AttachmentType)) {
+      /* Required until all types of attachments are processed */
+      const isProcessed = [
+        AttachmentType.PHOTO,
+        AttachmentType.AUDIO_MESSAGE,
+        AttachmentType.STICKER,
+      ].includes(type);
+
+      if (isProcessed) continue;
+
+      /* Drowning out errors in types vk-io */
+      const tmp = ctx.getAttachments(type as AttachmentType.WALL_REPLY);
+      const isNotEmpty = Boolean(tmp.length);
+
+      if (isNotEmpty) unprocessedAttachments.push(type);
+    }
+
+    if (unprocessedAttachments.length) {
+      this.emitter.emit('telegram:sendText', {
+        ...ctx.state,
+        text: ctx.text ?? '',
+        extra: '[' + unprocessedAttachments.join(', ') + ']',
+      });
+    }
   }
 }

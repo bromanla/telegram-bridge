@@ -2,26 +2,27 @@ import Bottleneck from 'bottleneck';
 import { Bot, InputMediaBuilder } from 'grammy';
 import { apiThrottler } from '@grammyjs/transformer-throttler';
 import { parseMode } from '@grammyjs/parse-mode';
+import { LoggerInstance } from '#src/common/logger.instance.js';
+import { ConfigInstance } from '#src/common/config.instance.js';
 
 import type {
-  Event,
-  EventBase,
   EventService,
+  TelegramEvent,
+  TelegramBaseEvent,
 } from '#src/service/event.service.js';
 import type { BotError } from 'grammy';
-import type { ConfigService } from '#src/service/config.service.js';
-import type { LoggerService } from '#src/service/logger.service.js';
 import type { BotContext } from './telegram.type.js';
 import type { TelegramStore } from './telegram.store.js';
-import type { Forum } from '@prisma/client';
+import type { Forum } from '#src/service/database.service.js';
 
 export class TelegramService {
   public readonly bot: Bot<BotContext>;
   public readonly queue: Bottleneck;
 
+  private readonly logger = new LoggerInstance();
+  private readonly config = new ConfigInstance();
+
   constructor(
-    private readonly config: ConfigService,
-    private readonly logger: LoggerService,
     private readonly emitter: EventService,
     private readonly store: TelegramStore,
   ) {
@@ -41,7 +42,7 @@ export class TelegramService {
     this.emitter.on('telegram:sendImage', this.wrap(this.sendImage));
   }
 
-  private wrap<E extends Event[keyof Event]>(
+  private wrap<E extends TelegramEvent[keyof TelegramEvent]>(
     fn: (event: E, forum: Forum, message: string) => Promise<number | number[]>,
   ) {
     return this.queue.wrap(async (event: E) => {
@@ -75,10 +76,10 @@ export class TelegramService {
     return `https://api.telegram.org/file/bot${this.config.telegram.token}/${url.file_path}`;
   }
 
-  private async loadForum(event: EventBase) {
+  private async loadForum(event: TelegramBaseEvent) {
     const id = event.isChat ? event.chatId : event.senderId;
     const name = event.isChat ? event.chatTitle : event.fullName;
-    const field = event.isChat ? 'chat' : 'user';
+    const field = event.isChat ? 'chat_id' : 'user_id';
 
     let forum = await this.store.findOneForum(id);
     if (!forum) {
@@ -89,8 +90,7 @@ export class TelegramService {
 
       forum = await this.store.createForum({
         id: message_thread_id,
-        name,
-        [field]: { connect: { id } },
+        [field]: id,
       });
     }
 
@@ -98,7 +98,7 @@ export class TelegramService {
   }
 
   private chatHistory = new Map<number, number>();
-  private getMessageText(event: EventBase) {
+  private getMessageText(event: TelegramBaseEvent) {
     const { text, extra } = event;
     const message: string[] = [];
 
@@ -124,7 +124,7 @@ export class TelegramService {
   }
 
   private async sendText(
-    event: Event['telegram:sendText'],
+    _: TelegramEvent['telegram:sendText'],
     forum: Forum,
     message: string,
   ) {
@@ -140,7 +140,7 @@ export class TelegramService {
   }
 
   private async sendSticker(
-    event: Event['telegram:sendSticker'],
+    event: TelegramEvent['telegram:sendSticker'],
     forum: Forum,
     message: string,
   ) {
@@ -157,7 +157,7 @@ export class TelegramService {
   }
 
   private async sendVoice(
-    event: Event['telegram:sendVoice'],
+    event: TelegramEvent['telegram:sendVoice'],
     forum: Forum,
     message: string,
   ) {
@@ -174,7 +174,7 @@ export class TelegramService {
   }
 
   private async sendImage(
-    event: Event['telegram:sendImage'],
+    event: TelegramEvent['telegram:sendImage'],
     forum: Forum,
     message: string,
   ) {

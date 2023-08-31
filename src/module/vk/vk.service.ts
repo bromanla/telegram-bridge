@@ -1,20 +1,18 @@
-import { AttachmentType, VK, getRandomId } from 'vk-io';
+import { LoggerInstance } from '#src/common/logger.instance.js';
+import { ConfigInstance } from '#src/common/config.instance.js';
+import { VK, getRandomId } from 'vk-io';
 
 import type { Updates } from 'vk-io';
-import type { ConfigService } from '#src/service/config.service.js';
-import type { LoggerService } from '#src/service/logger.service.js';
-import type { Event, EventService } from '#src/service/event.service.js';
-import type { MessageContext } from './vk.type.js';
+import type { EventService, VkEvent } from '#src/service/event.service.js';
 
 export class VkService {
+  private readonly logger = new LoggerInstance();
+  private readonly config = new ConfigInstance();
+
   public readonly bot: VK;
   public readonly updates: Updates;
 
-  constructor(
-    private readonly config: ConfigService,
-    private readonly logger: LoggerService,
-    private readonly emitter: EventService,
-  ) {
+  constructor(private readonly emitter: EventService) {
     this.bot = new VK({ token: this.config.vk.token });
     this.updates = this.bot.updates;
 
@@ -62,6 +60,7 @@ export class VkService {
         return {
           id: groupId,
           full_name: `${full_name} [group]`,
+          group: 1,
         };
       }
     }
@@ -84,87 +83,7 @@ export class VkService {
     return undefined;
   }
 
-  public handleText(ctx: MessageContext) {
-    const text = ctx.text;
-    const hasAttachments = ctx.hasAttachments();
-
-    /* Send only text message */
-    if (!hasAttachments && text) {
-      this.emitter.emit('telegram:sendText', { text, ...ctx.state });
-    }
-
-    ctx.state.text = text;
-    return hasAttachments;
-  }
-
-  public handleImages(ctx: MessageContext) {
-    const images = ctx
-      .getAttachments(AttachmentType.PHOTO)
-      .map((image) => image.largeSizeUrl)
-      .filter(Boolean);
-
-    if (images.length)
-      this.emitter.emit('telegram:sendImage', {
-        url: images,
-        ...ctx.state,
-      });
-  }
-
-  public handleVoices(ctx: MessageContext) {
-    const [voice] = ctx
-      .getAttachments(AttachmentType.AUDIO_MESSAGE)
-      .map((voice) => voice.oggUrl)
-      .filter(Boolean);
-
-    if (voice)
-      this.emitter.emit('telegram:sendVoice', {
-        url: voice,
-        ...ctx.state,
-      });
-  }
-
-  public handleStickers(ctx: MessageContext) {
-    const [sticker] = ctx
-      .getAttachments(AttachmentType.STICKER)
-      .map((sticker) => sticker.imagesWithBackground.pop()?.url)
-      .filter(Boolean);
-
-    if (sticker)
-      this.emitter.emit('telegram:sendSticker', {
-        url: sticker,
-        ...ctx.state,
-      });
-  }
-
-  public handleUnprocessed(ctx: MessageContext) {
-    const unprocessedAttachments: string[] = [];
-    for (const type of Object.values(AttachmentType)) {
-      /* Required until all types of attachments are processed */
-      const isProcessed = [
-        AttachmentType.PHOTO,
-        AttachmentType.AUDIO_MESSAGE,
-        AttachmentType.STICKER,
-      ].includes(type);
-
-      if (isProcessed) continue;
-
-      /* Drowning out errors in types vk-io */
-      const tmp = ctx.getAttachments(type as AttachmentType.WALL_REPLY);
-      const isNotEmpty = Boolean(tmp.length);
-
-      if (isNotEmpty) unprocessedAttachments.push(type);
-    }
-
-    if (unprocessedAttachments.length) {
-      this.emitter.emit('telegram:sendText', {
-        ...ctx.state,
-        text: ctx.text ?? '',
-        extra: '[' + unprocessedAttachments.join(', ') + ']',
-      });
-    }
-  }
-
-  private sendText(event: Event['vk.sendText']) {
+  private sendText(event: VkEvent['vk.sendText']) {
     return this.bot.api.messages.send({
       peer_id: event.peerId,
       message: event.text,
@@ -172,7 +91,7 @@ export class VkService {
     });
   }
 
-  private async sendGraffiti(event: Event['vk.sendGraffiti']) {
+  private async sendGraffiti(event: VkEvent['vk.sendGraffiti']) {
     const attachment = await this.bot.upload.messageGraffiti({
       source: { value: event.url },
     });
@@ -184,7 +103,7 @@ export class VkService {
     });
   }
 
-  private async sendImage(event: Event['vk.sendImage']) {
+  private async sendImage(event: VkEvent['vk.sendImage']) {
     const attachment = await this.bot.upload.messagePhoto({
       source: { value: event.url },
     });
@@ -197,7 +116,7 @@ export class VkService {
     });
   }
 
-  private async sendVoice(event: Event['vk.sendVoice']) {
+  private async sendVoice(event: VkEvent['vk.sendVoice']) {
     const attachment = await this.bot.upload.audioMessage({
       source: { value: event.url },
     });

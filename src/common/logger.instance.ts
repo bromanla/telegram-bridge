@@ -1,12 +1,20 @@
 import { createLogger, format, transports } from 'winston';
-import { ConfigService } from '#src/service/config.service.js';
-
+import { ConfigInstance } from '#src/common/config.instance.js';
 import type { Logger } from 'winston';
 
-export class LoggerService {
+const instance = Symbol('instance');
+
+/* Singleton class */
+export class LoggerInstance {
+  static [instance]: LoggerInstance;
+
   private logger: Logger;
 
-  constructor(config: ConfigService) {
+  constructor() {
+    if (LoggerInstance[instance]) return LoggerInstance[instance];
+
+    const config = new ConfigInstance();
+
     const loggerFormat = [
       format.timestamp(),
       format.splat(),
@@ -22,6 +30,8 @@ export class LoggerService {
       format: format.combine(...loggerFormat),
       transports: [new transports.Console()],
     });
+
+    LoggerInstance[instance] = this;
   }
 
   public error(message: any) {

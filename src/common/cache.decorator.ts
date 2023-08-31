@@ -1,10 +1,10 @@
-import { CacheInstance } from './cache.instance.js';
-import type { CacheOption } from './cache.instance.js';
+import { CacheInstance } from '#src/common/cache.instance.js';
+import type { CacheOption } from '#src/common/cache.instance.js';
 
 export function Cache(option?: CacheOption) {
   return function <This, Args extends [number], Return>(
     target: (this: This, ...args: Args) => Promise<Return>,
-    context: ClassMethodDecoratorContext<
+    _: ClassMethodDecoratorContext<
       This,
       (this: This, ...args: Args) => Promise<Return>
     >,

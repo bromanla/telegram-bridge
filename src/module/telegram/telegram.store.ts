@@ -1,34 +1,41 @@
 import { Cache } from '#src/common/cache.decorator.js';
+import { LoggerInstance } from '#src/common/logger.instance.js';
 
-import type { LoggerService } from '#src/service/logger.service.js';
-import type { Prisma, PrismaClient } from '@prisma/client';
+import type { Insertable } from 'kysely';
+import type { DatabaseService, Forum } from '#src/service/database.service.js';
 
 export class TelegramStore {
-  constructor(
-    private readonly logger: LoggerService,
-    private readonly forumStore: PrismaClient['forum'],
-  ) {}
+  private readonly logger = new LoggerInstance();
 
-  public async createForum(data: Prisma.ForumCreateInput) {
-    const forum = await this.forumStore.create({ data });
-    this.logger.debug(`Forum created (${forum.id})`);
+  constructor(private readonly database: DatabaseService) {}
 
-    return forum;
+  public async createForum(data: Insertable<Forum>) {
+    const forum = await this.database
+      .insertInto('forum')
+      .values(data)
+      .returningAll()
+      .executeTakeFirst();
+
+    this.logger.debug(`Forum created (${forum!.id})`);
+
+    return forum!;
   }
 
   @Cache()
   public async findOneForum(id: number) {
-    return this.forumStore.findFirst({
-      where: {
-        OR: [{ chatId: id }, { userId: id }],
-      },
-    });
+    return this.database
+      .selectFrom('forum')
+      .where((eb) => eb.or([eb('chat_id', '=', id), eb('user_id', '=', id)]))
+      .selectAll()
+      .executeTakeFirst();
   }
 
   @Cache()
   public async getForum(forumId: number) {
-    return this.forumStore.findUnique({
-      where: { id: forumId },
-    });
+    return this.database
+      .selectFrom('forum')
+      .where('id', '=', forumId)
+      .selectAll()
+      .executeTakeFirst();
   }
 }

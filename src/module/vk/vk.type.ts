@@ -1,8 +1,8 @@
 import type { Context, MessageContext as OriginalMessageContext } from 'vk-io';
 import type { NextMiddleware } from 'middleware-io';
-import type { EventBase } from '#src/service/event.service.js';
+import type { TelegramBaseEvent } from '#src/service/event.service.js';
 
-export type DefaultState = EventBase;
+export type DefaultState = TelegramBaseEvent;
 export type NextFunction = NextMiddleware;
 export type MessageContext = OriginalMessageContext<DefaultState>;
 

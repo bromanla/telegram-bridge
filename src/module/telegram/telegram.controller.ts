@@ -1,18 +1,20 @@
+import { LoggerInstance } from '#src/common/logger.instance.js';
+import { ConfigInstance } from '#src/common/config.instance.js';
+
 import type { NextFunction, Filter } from 'grammy';
-import type { LoggerService } from '#src/service/logger.service.js';
-import type { TelegramService } from './telegram.service.js';
-import type { TelegramStore } from './telegram.store.js';
-import type { BotContext } from './telegram.type.js';
+import type { TelegramService } from '#src/module/telegram/telegram.service.js';
+import type { TelegramStore } from '#src/module/telegram/telegram.store.js';
+import type { BotContext } from '#src/module/telegram/telegram.type.js';
 import type { EventService } from '#src/service/event.service.js';
-import type { ConfigService } from '#src/service/config.service.js';
 
 export class TelegramController {
+  private readonly logger = new LoggerInstance();
+  private readonly config = new ConfigInstance();
+
   constructor(
-    private readonly logger: LoggerService,
+    private readonly emitter: EventService,
     private readonly store: TelegramStore,
     private readonly service: TelegramService,
-    private readonly emitter: EventService,
-    private readonly config: ConfigService,
   ) {
     this.service.bot.use(this.accessMiddleware.bind(this));
 
@@ -44,8 +46,7 @@ export class TelegramController {
   ) {
     const forumId = ctx.message.message_thread_id;
     if (!forumId) {
-      // TODO: fix message
-      return ctx.reply('<b>Не поддерживается</b>');
+      return ctx.reply(`⚙️ <b>Uptime:</b> ${this.config.uptime}ms`);
     }
 
     const forum = await this.store.getForum(forumId);
@@ -58,8 +59,8 @@ export class TelegramController {
      * Chats require an addition 2000000000
      * https://dev.vk.com/ru/method/messages.send#Параметры
      */
-    const isChat = Boolean(forum?.chatId);
-    ctx.peerId = isChat ? forum.chatId! + 2000000000 : forum.userId!;
+    const isChat = Boolean(forum?.chat_id);
+    ctx.peerId = isChat ? forum.chat_id! + 2000000000 : forum.user_id!;
 
     return next();
   }
