@@ -116,8 +116,14 @@ export class TelegramService {
       message.push(text);
     }
 
-    if (extra) {
-      message.push(`<code>${extra}</code>`);
+    const processedExtra = extra.map((extra) =>
+      typeof extra === 'string'
+        ? extra
+        : `<a href="${extra.url}">${extra.text}</a>`,
+    );
+
+    if (processedExtra.length) {
+      message.push(`<b>[${processedExtra.join(', ')}]</b>`);
     }
 
     return message.join('\n\n');

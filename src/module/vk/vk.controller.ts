@@ -4,7 +4,10 @@ import { AttachmentType } from 'vk-io';
 import type { VkStore } from './vk.store.js';
 import type { VkService } from './vk.service.js';
 import type { NextFunction, MessageContext } from './vk.type.js';
-import type { EventService } from '#src/service/event.service.js';
+import type {
+  EventService,
+  TelegramBaseEvent,
+} from '#src/service/event.service.js';
 
 export class VkController {
   private logger = new LoggerInstance();
@@ -23,6 +26,7 @@ export class VkController {
   /* Ignore outgoing events */
   private inboxMiddleware(ctx: MessageContext, next: NextFunction) {
     ctx.state.handler = 'telegram';
+    ctx.state.extra = [];
 
     return ctx.isInbox ? next() : undefined;
   }
@@ -89,7 +93,6 @@ export class VkController {
     const hasAttachments = this.textHandler(ctx);
     if (!hasAttachments) return;
 
-    // TODO: implement nested messages
     await ctx.loadMessagePayload();
 
     this.imagesHandler(ctx);
@@ -102,6 +105,11 @@ export class VkController {
   private textHandler(ctx: MessageContext) {
     const text = ctx.text;
     const hasAttachments = ctx.hasAttachments();
+    const hasForwards = ctx.hasForwards;
+
+    if (hasForwards) {
+      ctx.state.extra.push('forward');
+    }
 
     /* Send only text message */
     if (!hasAttachments && text) {
@@ -152,7 +160,7 @@ export class VkController {
   }
 
   private unprocessedHandler(ctx: MessageContext) {
-    const unprocessedAttachments: string[] = [];
+    const unprocessedAttachments: TelegramBaseEvent['extra'] = [];
     for (const type of Object.values(AttachmentType)) {
       /* Required until all types of attachments are processed */
       const isProcessed = [
@@ -164,17 +172,26 @@ export class VkController {
       if (isProcessed) continue;
 
       /* Drowning out errors in types vk-io */
-      const tmp = ctx.getAttachments(type as AttachmentType.WALL_REPLY);
-      const isNotEmpty = Boolean(tmp.length);
+      const attachments = ctx.getAttachments(type as AttachmentType.WALL);
+      const isNotEmpty = Boolean(attachments.length);
 
-      if (isNotEmpty) unprocessedAttachments.push(type);
+      if (isNotEmpty) {
+        if (type === AttachmentType.WALL) {
+          const [wall] = attachments;
+
+          const url = `https://vk.com/wall${wall.ownerId}_${wall.id}`;
+          unprocessedAttachments.push({ url, text: type });
+        } else {
+          unprocessedAttachments.push(type);
+        }
+      }
     }
 
     if (unprocessedAttachments.length) {
       this.emitter.emit('telegram:sendText', {
         ...ctx.state,
         text: ctx.text ?? '',
-        extra: '[' + unprocessedAttachments.join(', ') + ']',
+        extra: unprocessedAttachments,
       });
     }
   }

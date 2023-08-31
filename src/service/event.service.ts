@@ -11,7 +11,7 @@ export type TelegramBaseEvent = {
   fullName: string;
 
   text?: string;
-  extra?: string;
+  extra: Array<string | { text: string; url: string }>;
 
   isGroup: boolean;
 } & TelegramBaseChatEvent;
