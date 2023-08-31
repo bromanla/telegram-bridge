@@ -1,17 +1,17 @@
-import logger from '@logger';
-import { loader as tgLoader } from '@loaders/tg.loader';
-import { loader as vkLoader } from '@loaders/vk.loader';
-import { loader as mongoLoader } from '@loaders/mongo.loader';
+import { VkModule } from '#src/module/vk/vk.module.js';
+import { EventService } from '#src/service/event.service.js';
+import { TelegramModule } from '#src/module/telegram/telegram.module.js';
+import { LoggerInstance } from '#src/common/logger.instance.js';
+import { DatabaseService } from '#src/service/database.service.js';
 
-const launch = async () => {
-  await mongoLoader();
-  logger.info('mongo launched');
+const logger = new LoggerInstance();
+const emitter = new EventService();
+const database = new DatabaseService();
 
-  await tgLoader();
-  logger.info('telegram launched');
+const vk = new VkModule(emitter, database);
+const telegram = new TelegramModule(emitter, database);
 
-  await vkLoader();
-  logger.info('vk launched');
-};
+await vk.launch();
+await telegram.launch();
 
-launch();
+logger.info(`node: ${process.version}`);
