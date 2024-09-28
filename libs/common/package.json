@@ -1,0 +1,17 @@
+{
+  "name": "@without/common",
+  "type": "module",
+  "main": "build/index.js",
+  "version": "1.0.0",
+  "scripts": {
+    "prebuild": "rm -rf build",
+    "build": "tsc",
+    "start": "node build/index.js",
+    "start:dev": "tsc-watch --onSuccess \"node --env-file=.env --inspect build/index.js\""
+  },
+  "types": "build/index.d.ts",
+  "imports": {
+    "#src/*": "./build/*",
+    "#root/*": "./"
+  }
+}
