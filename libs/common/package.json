@@ -1,5 +1,5 @@
 {
-  "name": "@without/common",
+  "name": "@bridge/common",
   "type": "module",
   "main": "build/index.js",
   "version": "1.0.0",
@@ -13,5 +13,8 @@
   "imports": {
     "#src/*": "./build/*",
     "#root/*": "./"
+  },
+  "dependencies": {
+    "winston": "^3.14.2"
   }
 }
