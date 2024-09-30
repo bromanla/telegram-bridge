@@ -1,21 +1,20 @@
 {
-  "name": "@bridge/bus",
+  "name": "@bridge/contract",
   "type": "module",
-  "version": "1.0.0",
   "main": "build/index.js",
+  "version": "1.0.0",
   "scripts": {
     "prebuild": "rm -rf build",
     "build": "tsc",
-    "start": "node --env-file=.env build/index.js",
+    "start": "node build/index.js",
     "start:dev": "tsc-watch --onSuccess \"node --env-file=.env --inspect build/index.js\""
   },
   "types": "build/index.d.ts",
-  "dependencies": {
-    "@bridge/common": "1.0.0",
-    "nats": "^2.28.2"
-  },
   "imports": {
     "#src/*": "./build/*",
     "#root/*": "./"
+  },
+  "devDependencies": {
+    "@bridge/bus": "1.0.0"
   }
 }

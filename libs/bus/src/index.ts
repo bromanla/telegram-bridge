@@ -1,33 +1,62 @@
-import { BusService } from '#src/bus.service.js';
+export * from '#src/bus.constant.js';
+export * from '#src/bus.service.js';
+export * from '#src/bus.type.js';
 
-type BusStream = ['messages', 'system'];
-interface BusData {
-  messages:
-    | {
-        _type: 'a';
-        numberData: number;
-      }
-    | {
-        _type: 'b';
-        stringData: string;
-      };
-  system: {
-    _type: 'a';
-    data: boolean;
-  };
-}
+// import { BusService } from '#src/bus.service.js';
+// import { setTimeout } from 'timers/promises';
 
-const bus = new BusService<BusStream, BusData>({
-  streams: [
-    { name: 'messages', subjects: ['messages.head', 'messages.vk'] as const },
-  ],
-  consumers: [
-    {
-      name: 'head_consumer',
-      stream: 'messages',
-      subjects: ['messages.head'],
-    },
-  ],
-});
+// type Bromanla =
+//   | {
+//       stream: 'messages';
+//       subject: 'messages.head';
+//       type: {
+//         _type: 'a';
+//         numberData: number;
+//       };
+//     }
+//   | {
+//       stream: 'messages';
+//       subject: 'messages.vk';
+//       type: {
+//         _type: 'b';
+//         stringData: string;
+//       };
+//     }
+//   | {
+//       stream: 'system';
+//       subject: 'system.command';
+//       type: {
+//         _type: 'c';
+//         data: boolean;
+//       };
+//     };
 
-// bus.publish('system', { data: true });
+// const bus = new BusService<Bromanla>({
+//   streams: [
+//     {
+//       name: 'messages',
+//       subjects: ['messages.head', 'messages.vk'],
+//     },
+//     {
+//       name: 'system',
+//       subjects: ['system.command'],
+//     },
+//   ],
+//   consumers: [
+//     {
+//       name: 'head_consumer',
+//       stream: 'messages',
+//       subjects: ['messages.vk'],
+//     },
+//   ],
+// });
+
+// await bus.launch();
+// await setTimeout(3000);
+
+// bus.consume('messages', 'head_consumer', (message, data) => {
+//   console.log(data);
+// });
+
+// bus.publish('messages.vk', { _type: 'b', stringData: '2' });
+// bus.publish('messages.vk', { _type: 'b', stringData: '3' });

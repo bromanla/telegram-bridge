@@ -1,15 +1,21 @@
-export interface BusStream<S extends string> {
-  name: S;
-  subjects: string[];
+export interface BusConfigBase {
+  stream: string;
+  subject: string;
+  type: any;
 }
 
-export interface BusConsumer<S extends string> {
+export interface BusStream<C extends BusConfigBase> {
+  name: C['stream'];
+  subjects: C['subject'][];
+}
+
+export interface BusConsumer<C extends BusConfigBase> {
   name: string;
-  stream: S;
-  subjects?: string[];
+  stream: C['stream'];
+  subjects?: C['subject'][];
 }
 
-export interface BusOptions<S extends string> {
-  streams: BusStream<S>[];
-  consumers: BusConsumer<S>[];
+export interface BusOptions<C extends BusConfigBase> {
+  streams: BusStream<C>[];
+  consumers: BusConsumer<C>[];
 }

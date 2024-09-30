@@ -2,26 +2,23 @@ import { connect, JSONCodec, headers, AckPolicy } from 'nats';
 import { logger } from '@bridge/common';
 import { MAX_MESSAGES } from '#src/bus.constant.js';
 
-import type { BusOptions } from '#src/bus.type.js';
+import type { BusOptions, BusConfigBase } from '#src/bus.type.js';
 import type {
+  JsMsg,
   Codec,
   NatsConnection,
   JetStreamClient,
   JetStreamManager,
 } from 'nats';
 
-export class BusService<
-  BusStream extends readonly string[],
-  BusData extends Record<BusStream[number], unknown>,
-> {
+export class BusService<BusConfig extends BusConfigBase> {
   readonly url: string;
-  readonly codec: Codec<unknown>;
-
+  readonly codec: Codec<any>;
   private _connection: NatsConnection;
   private _client: JetStreamClient;
   private _manager: JetStreamManager;
 
-  constructor(private _options: BusOptions<BusStream[number]>) {
+  constructor(private _options: BusOptions<BusConfig>) {
     this.url = process.env.NATS_URL ?? 'localhost';
     this.codec = JSONCodec();
   }
@@ -33,9 +30,9 @@ export class BusService<
     return this._manager;
   }
 
-  publish<S extends BusStream[number]>(
+  publish<S extends BusConfig['subject']>(
     stream: S,
-    message: Omit<BusData[S], '_type'>,
+    message: Extract<BusConfig, { subject: S }>['type'],
     headers?: Record<string, string>,
   ) {
     return this._client.publish(stream, this.codec.encode(message), {
@@ -43,14 +40,34 @@ export class BusService<
     });
   }
 
+  async consume<S extends BusConfig['stream']>(
+    stream: S,
+    consumer: string,
+    fn: (
+      message: JsMsg,
+      data: Extract<BusConfig, { stream: S }>['type'],
+    ) => Promise<void> | void,
+  ) {
+    const client = await this._client.consumers.get(String(stream), consumer);
+    const messages = await client.consume({ max_messages: 1 });
+
+    for await (const message of messages) {
+      try {
+        const data = this.codec.decode(message.data);
+        await fn(message, data);
+        message.ack();
+      } catch (err) {
+        message.nak();
+      }
+    }
+  }
+
   private _prepareHeaders(rawHeaders?: Record<string, string>) {
     const preparedHeaders = headers();
     if (!rawHeaders) return preparedHeaders;
-
     for (const [key, value] of Object.entries(rawHeaders)) {
       preparedHeaders.append(key, value);
     }
-
     return preparedHeaders;
   }
 
