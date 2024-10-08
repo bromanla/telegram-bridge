@@ -9,11 +9,15 @@ await bus.launch();
 
 import { setTimeout } from 'timers/promises';
 
+console.log(process.env.BROMANLA);
+
 await setTimeout(3000);
 
 bus.consume('messages', 'head_consumer', (message, data) => {
   console.log(data);
 });
 
-bus.publish('messages.vk', { stringData: '2' });
-bus.publish('messages.vk', { stringData: '3' });
+// bus.publish('messages.vk', { stringData: '2' });
+// bus.publish('messages.vk', { stringData: '3' });
+
+//

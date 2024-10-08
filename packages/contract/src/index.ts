@@ -1,1 +1,1 @@
-export * from '#src/bus.contract.js';
+export * from '#src/bus/bus.contract.js';

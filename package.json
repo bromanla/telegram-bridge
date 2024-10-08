@@ -3,18 +3,22 @@
   "name": "telegram-bridge",
   "description": "seamless message bridge between social networks",
   "license": "MIT",
-  "author": "bromanla <bromanla.json@gmail.com>",
+  "author": "Roman <bromanla.json@gmail.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/bromanla/telegram-bridge.git"
   },
   "scripts": {
-    "build": "sh build.sh"
+    "build": "npm run build --workspaces"
   },
   "workspaces": [
-    "packages/*",
-    "libs/*"
+    "libs/*",
+    "packages/contract",
+    "packages/telegram"
   ],
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
   "devDependencies": {
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/node": "^22.5.5",
