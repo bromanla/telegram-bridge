@@ -5,14 +5,14 @@ export interface BusConfigBase {
 }
 
 export interface BusStream<C extends BusConfigBase> {
-  name: C['stream'];
-  subjects: C['subject'][];
+  name: C["stream"];
+  subjects: C["subject"][];
 }
 
 export interface BusConsumer<C extends BusConfigBase> {
   name: string;
-  stream: C['stream'];
-  subjects?: C['subject'][];
+  stream: C["stream"];
+  subjects?: C["subject"][];
 }
 
 export interface BusOptions<C extends BusConfigBase> {

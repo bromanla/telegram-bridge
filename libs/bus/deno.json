@@ -1,0 +1,7 @@
+{
+  "name": "@bridge/bus",
+  "exports": "./mod.ts",
+  "imports": {
+    "nats": "https://deno.land/x/nats@v1.28.2/src/mod.ts"
+  }
+}

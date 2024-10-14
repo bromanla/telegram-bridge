@@ -1,27 +1,23 @@
-import { connect, JSONCodec, headers, AckPolicy } from 'nats';
-import { logger } from '@bridge/common';
-import { MAX_MESSAGES } from '#src/bus.constant.js';
+import { AckPolicy, connect, headers, JSONCodec } from "nats";
+import { logger } from "@bridge/common";
+import { MAX_MESSAGES } from "./constant.ts";
 
-import type { BusOptions, BusConfigBase } from '#src/bus.type.js';
+import type { BusConfigBase, BusOptions } from "./types.ts";
 import type {
-  JsMsg,
   Codec,
-  NatsConnection,
   JetStreamClient,
   JetStreamManager,
-} from 'nats';
+  JsMsg,
+  NatsConnection,
+} from "nats";
 
 export class BusService<BusConfig extends BusConfigBase> {
   readonly url: string;
   readonly codec: Codec<any>;
+
   private _connection: NatsConnection;
   private _client: JetStreamClient;
   private _manager: JetStreamManager;
-
-  constructor(private _options: BusOptions<BusConfig>) {
-    this.url = process.env.NATS_URL ?? 'localhost';
-    this.codec = JSONCodec();
-  }
 
   /**
    * @deprecated Use only during development
@@ -30,9 +26,9 @@ export class BusService<BusConfig extends BusConfigBase> {
     return this._manager;
   }
 
-  publish<S extends BusConfig['subject']>(
+  publish<S extends BusConfig["subject"]>(
     stream: S,
-    message: Extract<BusConfig, { subject: S }>['type'],
+    message: Extract<BusConfig, { subject: S }>["type"],
     headers?: Record<string, string>,
   ) {
     return this._client.publish(stream, this.codec.encode(message), {
@@ -40,12 +36,12 @@ export class BusService<BusConfig extends BusConfigBase> {
     });
   }
 
-  async consume<S extends BusConfig['stream']>(
+  async consume<S extends BusConfig["stream"]>(
     stream: S,
     consumer: string,
     fn: (
       message: JsMsg,
-      data: Extract<BusConfig, { stream: S }>['type'],
+      data: Extract<BusConfig, { stream: S }>["type"],
     ) => Promise<void> | void,
   ) {
     const client = await this._client.consumers.get(String(stream), consumer);
@@ -56,7 +52,7 @@ export class BusService<BusConfig extends BusConfigBase> {
         const data = this.codec.decode(message.data);
         await fn(message, data);
         message.ack();
-      } catch (err) {
+      } catch {
         message.nak();
       }
     }
@@ -99,9 +95,13 @@ export class BusService<BusConfig extends BusConfigBase> {
     await this._setupStreams();
     await this._setupConsumers();
 
-    logger.info({
+    logger.info("success launch", {
       service: BusService.name,
-      message: 'success launch',
     });
+  }
+
+  constructor(private _options: BusOptions<BusConfig>) {
+    this.url = Deno.env.get("NATS_URL") ?? "localhost";
+    this.codec = JSONCodec();
   }
 }
