@@ -1,18 +1,15 @@
-import * as z from "zod";
 import * as log from "@std/log";
+import z from "zod";
 import { isDevelopment } from "./config.ts";
 import type { LevelName, LogRecord } from "@std/log";
 
 /** Scheme for checking the logging level */
 const logLevelSchema = z.enum(
   log.LogLevelNames as unknown as [LevelName, ...LevelName[]],
-);
+).default("DEBUG");
 
 /** Get the logging level from an environment variable */
-const logLevelResult = logLevelSchema.safeParse(Deno.env.get("LOGGER_LEVEL"));
-
-/** If the result is successful, use the level from the variable, otherwise "DEBUG" */
-const level = logLevelResult.success ? logLevelResult.data : "DEBUG";
+const level = logLevelSchema.parse(Deno.env.get("LOGGER_LEVEL"));
 
 /** Setting up the logger */
 log.setup({

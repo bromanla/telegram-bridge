@@ -1,3 +1,4 @@
+import { BusService as BusServiceConstructor } from "@bridge/bus";
 import type { BusOptions } from "@bridge/bus";
 
 export type BusData =
@@ -9,10 +10,10 @@ export type BusData =
     subject: "messages.telegram";
     type: {
       isChat: boolean;
-      // chatId: number;
-      // fullName: string;
-      // chatTitle: string;
-      // extra: Array<string>;
+      chatId: number;
+      fullName: string;
+      chatTitle: string;
+      extra: Array<string>;
     };
   }
   | {
@@ -50,3 +51,9 @@ export const BUS_OPTIONS = Object.freeze(
     ],
   } satisfies BusOptions<BusData>,
 );
+
+export class BusService extends BusServiceConstructor<BusData> {
+  constructor() {
+    super(BUS_OPTIONS);
+  }
+}

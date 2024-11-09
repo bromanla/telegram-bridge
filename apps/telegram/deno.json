@@ -1,5 +1,6 @@
 {
   "imports": {
+    "/": "./",
     "@grammyjs/i18n": "https://deno.land/x/grammy_i18n@v1.1.0/mod.ts",
     "@grammyjs/parse-mode": "https://deno.land/x/grammy_parse_mode@1.10.0/mod.ts",
     "grammy": "https://deno.land/x/grammy@v1.30.0/mod.ts"

@@ -1,0 +1,33 @@
+{
+  "version": "2.0.0",
+  "workspace": [
+    "libs/common",
+    "libs/bus",
+    "libs/store",
+    "apps/contract",
+    "apps/telegram"
+  ],
+  "tasks": {
+    // TODO: access control flags
+    "telegram:dev": "deno --allow-all --env --watch --inspect --check apps/telegram/index.ts",
+    "telegram:compile": "deno --allow-all --output=bin/telegram apps/telegram/index.ts",
+    // Database migration actions
+    "migrate": "deno --env --allow-env --allow-net --allow-read libs/store/src/migrate.ts $COMMAND",
+    "migrate:up": "export COMMAND=up && deno task migrate",
+    "migrate:down": "export COMMAND=down && deno task migrate"
+  },
+  "imports": {
+    "@std/cache": "jsr:@std/cache@^0.1.3",
+    "@std/datetime": "jsr:@std/datetime@^0.225.2",
+    "@std/path": "jsr:@std/path@^1.0.6",
+    "zod": "https://deno.land/x/zod@v3.23.8/mod.ts"
+  },
+  "compilerOptions": {
+    "strictPropertyInitialization": false
+  },
+  "lint": {
+    "rules": {
+      "exclude": ["no-unused-vars", "no-explicit-any"]
+    }
+  }
+}
