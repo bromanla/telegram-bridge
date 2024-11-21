@@ -5,22 +5,23 @@
     "libs/bus",
     "libs/store",
     "apps/contract",
-    "apps/telegram"
+    "apps/telegram",
+    "apps/vk"
   ],
   "tasks": {
     // TODO: access control flags
-    "telegram:dev": "deno --allow-all --env --watch --inspect --check apps/telegram/index.ts",
-    "telegram:compile": "deno --allow-all --output=bin/telegram apps/telegram/index.ts",
+    "telegram:dev": "deno --allow-all --env --watch --inspect=127.0.0.1:9230 --check apps/telegram/index.ts",
+    "vk:dev": "deno --allow-all --env --watch --inspect=127.0.0.1:9231 --check apps/vk/index.ts",
     // Database migration actions
     "migrate": "deno --env --allow-env --allow-net --allow-read libs/store/src/migrate.ts $COMMAND",
     "migrate:up": "export COMMAND=up && deno task migrate",
     "migrate:down": "export COMMAND=down && deno task migrate"
   },
   "imports": {
-    "@std/cache": "jsr:@std/cache@^0.1.3",
     "@std/datetime": "jsr:@std/datetime@^0.225.2",
     "@std/path": "jsr:@std/path@^1.0.6",
-    "zod": "https://deno.land/x/zod@v3.23.8/mod.ts"
+    "zod": "https://deno.land/x/zod@v3.23.8/mod.ts",
+    "@total-typescript/ts-reset": "npm:@total-typescript/ts-reset@^0.6.1"
   },
   "compilerOptions": {
     "strictPropertyInitialization": false

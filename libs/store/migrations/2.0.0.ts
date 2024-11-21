@@ -6,7 +6,7 @@ export async function up(db: Kysely<any>) {
     .addColumn("id", "integer", (col) => col.primaryKey())
     .addColumn("first_name", "varchar(256)")
     .addColumn("last_name", "varchar(256)")
-    .addColumn("group", "integer")
+    .addColumn("is_group", "boolean")
     .execute();
 
   await db.schema

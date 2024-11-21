@@ -2,7 +2,7 @@
   "name": "@bridge/common",
   "exports": "./mod.ts",
   "imports": {
-    "npm:winston": "npm:winston@^3.14.2",
-    "@std/log": "jsr:@std/log@^0.224.9"
+    "@std/log": "jsr:@std/log@^0.224.9",
+    "@std/cache": "jsr:@std/cache@^0.1.3"
   }
 }

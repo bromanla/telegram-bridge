@@ -6,10 +6,17 @@
   "configurations": [
     {
       "type": "node",
-      "name": "Attach proccess",
+      "name": "Attach Telegram",
       "request": "attach",
       "restart": true,
-      "port": 9229
+      "port": 9230
+    },
+    {
+      "type": "node",
+      "name": "Attach VK",
+      "request": "attach",
+      "restart": true,
+      "port": 9231
     }
   ]
 }

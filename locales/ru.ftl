@@ -1,10 +1,10 @@
 # https://projectfluent.org/fluent/guide
 
-back = « Назад
+back = « Back
 
 confirm =
-  .yes = Да
-  .no = Нет
+  .yes = Yes
+  .no = No
 
 uptime =
   ⚙️ <b>Uptime</b>
@@ -16,4 +16,4 @@ uptime =
   </code>
 
 error =
-  .loadForum = Форум не найден ({ $forumId })
+  .loadForum = Forum not found ({ $forumId })

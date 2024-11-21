@@ -10,8 +10,7 @@ export interface User {
   id: number;
   first_name: string | null;
   last_name: string | null;
-  full_name: string;
-  group: number | null;
+  is_group: boolean | null;
 }
 
 export interface Chat {
@@ -21,7 +20,6 @@ export interface Chat {
 
 export interface Forum {
   id: number;
-
   chat_id: number | null;
   user_id: number | null;
 }
