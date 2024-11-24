@@ -1,9 +1,8 @@
-import { z } from "zod";
-import { config as defaultConfig } from "@bridge/common";
+import { config as defaultConfig, requiredEnv } from "@bridge/common";
 
-const tokenScheme = z.string().min(0);
+const token = requiredEnv("VK_TOKEN");
 
 export const config = {
   ...defaultConfig,
-  token: tokenScheme.parse(Deno.env.get("VK_TOKEN")),
+  token,
 };

@@ -1,4 +1,0 @@
-{
-  "name": "@bridge/contract",
-  "exports": "./mod.ts"
-}

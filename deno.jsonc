@@ -4,7 +4,6 @@
     "libs/common",
     "libs/bus",
     "libs/store",
-    "apps/contract",
     "apps/telegram",
     "apps/vk"
   ],
@@ -19,7 +18,7 @@
   },
   "imports": {
     "@std/datetime": "jsr:@std/datetime@^0.225.2",
-    "@std/path": "jsr:@std/path@^1.0.6",
+    "@std/path": "jsr:@std/path@^1.0.8",
     "zod": "https://deno.land/x/zod@v3.23.8/mod.ts",
     "@total-typescript/ts-reset": "npm:@total-typescript/ts-reset@^0.6.1"
   },
