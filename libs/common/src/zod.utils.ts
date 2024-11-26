@@ -1,6 +1,6 @@
 import z from "zod";
 
-export function zDefaultMessage(message: string) {
+function zDefaultMessage(message: string) {
   return {
     errorMap: (() => ({ message })),
   };
@@ -8,11 +8,11 @@ export function zDefaultMessage(message: string) {
 
 export function requiredEnv(env: string, options?: { default?: string }) {
   const params = zDefaultMessage(`Required ${env}`);
-  const schema = z.string(params).min(0);
 
-  if (options?.default) {
-    schema.default(options.default);
-  }
+  const baseSchema = z.string(params).min(0);
+  const schema = options?.default
+    ? baseSchema.default(options.default)
+    : baseSchema;
 
   return schema.parse(Deno.env.get(env));
 }

@@ -9,6 +9,7 @@
     "jsr:@std/log@~0.224.11": "0.224.11",
     "jsr:@std/path@^1.0.8": "1.0.8",
     "npm:@total-typescript/ts-reset@~0.6.1": "0.6.1",
+    "npm:@types/node@*": "22.5.4",
     "npm:kysely@~0.27.4": "0.27.4",
     "npm:pg@^8.13.1": "8.13.1",
     "npm:vk-io@^4.9.1": "4.9.1"
@@ -44,6 +45,12 @@
   "npm": {
     "@total-typescript/ts-reset@0.6.1": {
       "integrity": "sha512-cka47fVSo6lfQDIATYqb/vO1nvFfbPw7uWLayIXIhGETj0wcOOlrlkobOMDNQOFr9QOafegUPq13V2+6vtD7yg=="
+    },
+    "@types/node@22.5.4": {
+      "integrity": "sha512-FDuKUJQm/ju9fT/SeX/6+gBzoPzlVCzfzmGkwKvRHQVxi4BntVbyIwf6a4Xn62mrvndLiml6z/UBXIdEVjQLXg==",
+      "dependencies": [
+        "undici-types"
+      ]
     },
     "abort-controller@3.0.0": {
       "integrity": "sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==",
@@ -172,6 +179,9 @@
     "split2@4.2.0": {
       "integrity": "sha512-UcjcJOWknrNkF6PLX83qcHM6KHgVKNkV62Y8a5uYDVv9ydGQVwAHMKqHdJje1VTWpljG0WYpCDhrCdAOYH4TWg=="
     },
+    "undici-types@6.19.8": {
+      "integrity": "sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw=="
+    },
     "vk-io@4.9.1": {
       "integrity": "sha512-TyE/PKr2RSYQS4egISSUBZAIPeHwOiSOU7CuzUSigbFZzD3QLOATrYoE6EqIhxWv2na/fO6ZBTB8kYIrU8/PPA==",
       "dependencies": [
@@ -195,6 +205,59 @@
     }
   },
   "remote": {
+    "https://deno.land/std@0.221.0/io/types.ts": "acecb3074c730b5ff487ba4fe9ce51e67bd982aa07c95e5f5679b7b2f24ad129",
+    "https://deno.land/std@0.221.0/io/write_all.ts": "24aac2312bb21096ae3ae0b102b22c26164d3249dff96dbac130958aa736f038",
+    "https://deno.land/x/nats@v1.28.2/jetstream/consumer.ts": "21d5a530aba9a2ec785767d04671abbc8338ddef1def4926c6e6c2dcef43eba6",
+    "https://deno.land/x/nats@v1.28.2/jetstream/internal_mod.ts": "7eb8ef28f6f19020a49a13ec46b3eb48872ee18dc0618c03be94c9f8fca87d64",
+    "https://deno.land/x/nats@v1.28.2/jetstream/jsapi_types.ts": "5307a427d31369d5b3d0687ad09b55ac5fc3cd346b3886f6ebaea377835d2f4c",
+    "https://deno.land/x/nats@v1.28.2/jetstream/jsbaseclient_api.ts": "d94b3a069d6bb9a7346c5bea70ee057950ff582b2b0303e46152fe6f8176878f",
+    "https://deno.land/x/nats@v1.28.2/jetstream/jsclient.ts": "20ac2df5192b851fb4c768f8d740ebacd06e0645ded67a47bbaaa8fc2a4a3ce2",
+    "https://deno.land/x/nats@v1.28.2/jetstream/jslister.ts": "15bf52f70fdce615619fb58688afc931722827633d7256f97012142c4ce923e3",
+    "https://deno.land/x/nats@v1.28.2/jetstream/jsm.ts": "32ad56bf2b812009389479be719508e8fbb6d8d8e92699220178c8eeb188f62f",
+    "https://deno.land/x/nats@v1.28.2/jetstream/jsmconsumer_api.ts": "97d805219ea92446a328263d5472832f55949f15520f2c93c94566c0550e2605",
+    "https://deno.land/x/nats@v1.28.2/jetstream/jsmsg.ts": "4dc0c80540cd48bce2c580ab30b0facc9d296fd03a4e86ccf66b0878c4e4a31d",
+    "https://deno.land/x/nats@v1.28.2/jetstream/jsmstream_api.ts": "781175e415bc937b3ab26874d942831f7318ec12d5d072c36a85e394ba66fc2a",
+    "https://deno.land/x/nats@v1.28.2/jetstream/jsutil.ts": "2bf246f1d3d15cd804ad062f08e7e0871ebbebb25c191b305c454bf4513c96af",
+    "https://deno.land/x/nats@v1.28.2/jetstream/kv.ts": "9cab930255a5f32404907c9745f79fd8bed410506aa3acb79e4ccec2c05b3f83",
+    "https://deno.land/x/nats@v1.28.2/jetstream/mod.ts": "43d89b07a9354800955bd0cb7b6b25195929ebd2802a217c2af8c82e8021f35d",
+    "https://deno.land/x/nats@v1.28.2/jetstream/objectstore.ts": "c0d87cbf54a92070768d32f194512c1692335a909edd76f564ac759f6362a570",
+    "https://deno.land/x/nats@v1.28.2/jetstream/types.ts": "cc01bbe9a067f3981a84402af7aa4719305343c91cf317d5bafe496dc585b10b",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/authenticator.ts": "9cbfef9352748917ceada487e1ee44d91f55cd5e51d3a74577d99c77d8456d02",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/base64.ts": "c031bf9f8ac451f2e50c44a3b2f9ff564d61bb14c51834ce73db837e1dee432b",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/bench.ts": "9bfc16649a48228953255d2d3819b86a076ebe7cbdcccf0bbfb30089aa759631",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/codec.ts": "da86654fb1f52766b998bbe22f28aa3bd3bfe6098f4d03a364999b75d522c551",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/core.ts": "98d492c0091f6ad354fc23544836d62571642c4eb336c7830e7137755d7b14d8",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/databuffer.ts": "4f92f772ca6701d15f2d148d2d34543558d458b20014d0404f605f84b747b75f",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/denobuffer.ts": "83686bd747953167824694a3f4882ed7134a4fe70b3af89b65b41c284bc0c06a",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/encoders.ts": "223f9a203d4540d3df1f219b7a93f7a04e94a4ee8b5609ce99317e25b11cdbcf",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/headers.ts": "ad4f78316978672476e1eb9b72859539d65388569854a9c1fab447f3fc0c2b58",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/heartbeats.ts": "ae28515ee032f9bfc391809c146b85f5d59b9acc56d9c83a7222acfa0d2fe019",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/idleheartbeat_monitor.ts": "7f5f02723130ad47e93eb820454f4451e20fd3cc09f030c152017e05a37c010c",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/internal_mod.ts": "0e309962bf1c37d053d6066b2310dbff7aa048fec2200aaf3be796ce37397d6e",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/ipparser.ts": "eced7163655be5bb457f9a3a5880239131996e3ae7d7817db88c156faa42d29f",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/mod.ts": "2974c00cb3794e1b383222bc63ffabff1b2de531dd0da9bde85104da797bc00e",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/msg.ts": "89dc0f6502ae8692e95c937a997821b80fb5d3c4538d922f149ffdd871cdcf6e",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/muxsubscription.ts": "07ce9bf83c11f4e1e1e927cdaaaabbb07929af18ee024ca9e462650009e31d74",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/nats.ts": "0a0f297446091015a94bbf970d8f4eb5f296d719d789e1709041de2519e33a0f",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/nkeys.ts": "01aa92908831dd3baad8dbc0e1b3eb05c7b8532a96f799244ff5da16aaee8e69",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/nuid.ts": "796710eb4987ef97a4b711668a37b66de26208562fd89be76d54f986393ebc48",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/options.ts": "c8da1635ae4fcb5f5615432c1d740fc68d8be2c66d8e6251f1ab462cec9440e2",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/parser.ts": "841c14dab3ba248f839cd14574e2249a5e98acc75e105ecdc4242501ef2b9f5a",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/protocol.ts": "9dcf82fe816c4b9412dea51acc4e1d8b4c6b707c174a7b3065d400dac7e7818c",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/queued_iterator.ts": "bc11bc6fe28b1c9929c4326f3a3bfe4deec56a26c626ba7578c93670380b51d2",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/request.ts": "6432db28e9177f24be0cdec5a9bf6181e95a3c7c26691156fa7906e593a5372d",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/semver.ts": "ef6b048113ad29d39e653d5dd2e0e535e519320f9cc5076f747736dc13631919",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/servers.ts": "e58e35d4726ab623d0b8b12afde03f3e35ef4c41c77f1ef5e0fe63a3d0f80146",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/service.ts": "8c1d834e5bac32038ebcc72e4870c1ff75cf55b4be6a4d6b96435df5865de0c6",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/serviceclient.ts": "8110c8b3d4b21baf43f8d1b12e7f245eef51408d1406e343403764e28e8e505d",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/sha256.js": "87a436302eafacfea9600cf0276245f39d13718c4cbaa81daff47af4ea6523fd",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/transport.ts": "645996427e586083bac2155d48134306b07ad6baca014fa6a78ee1feb69c9366",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/typedsub.ts": "b5f0c5f270975a6425c6467719ecd5caf538fe0eaafc2c12abc73fd7a577c3e1",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/types.ts": "fa9f61b492fffb153ae794a41b19c89094f988c4eb79ff98211fd367eb70c385",
+    "https://deno.land/x/nats@v1.28.2/nats-base-client/util.ts": "44aadae8c3ce5b04a0f5085ca8e07a55380b75312bbf641e1b6f9c39db17981f",
+    "https://deno.land/x/nats@v1.28.2/src/connect.ts": "117abbed3b942555451e5adf31befd34ee64aa2b12e36688cb11fb9c7e69c221",
+    "https://deno.land/x/nats@v1.28.2/src/deno_transport.ts": "eeeff865b25c07f4e817ddcf56721f8c90da3b3308d6e904c6ae7fd671d2de5f",
+    "https://deno.land/x/nats@v1.28.2/src/mod.ts": "e5c12c8215cb250d888f9c0e4ee3372a1adbbcd938f8264a8a5275f194f99a3c",
     "https://deno.land/x/zod@v3.23.8/ZodError.ts": "528da200fbe995157b9ae91498b103c4ef482217a5c086249507ac850bd78f52",
     "https://deno.land/x/zod@v3.23.8/errors.ts": "5285922d2be9700cc0c70c95e4858952b07ae193aa0224be3cbd5cd5567eabef",
     "https://deno.land/x/zod@v3.23.8/external.ts": "a6cfbd61e9e097d5f42f8a7ed6f92f93f51ff927d29c9fbaec04f03cbce130fe",
@@ -207,7 +270,19 @@
     "https://deno.land/x/zod@v3.23.8/index.ts": "d27aabd973613985574bc31f39e45cb5d856aa122ef094a9f38a463b8ef1a268",
     "https://deno.land/x/zod@v3.23.8/locales/en.ts": "a7a25cd23563ccb5e0eed214d9b31846305ddbcdb9c5c8f508b108943366ab4c",
     "https://deno.land/x/zod@v3.23.8/mod.ts": "ec6e2b1255c1a350b80188f97bd0a6bac45801bb46fc48f50b9763aa66046039",
-    "https://deno.land/x/zod@v3.23.8/types.ts": "1b172c90782b1eaa837100ebb6abd726d79d6c1ec336350c8e851e0fd706bf5c"
+    "https://deno.land/x/zod@v3.23.8/types.ts": "1b172c90782b1eaa837100ebb6abd726d79d6c1ec336350c8e851e0fd706bf5c",
+    "https://raw.githubusercontent.com/nats-io/nkeys.js/v1.0.4/modules/esm/deps.ts": "38d8dcfc3ca0b7429532477127719affa0da04824610e2a1069f9f935032894f",
+    "https://raw.githubusercontent.com/nats-io/nkeys.js/v1.0.4/modules/esm/mod.ts": "43c3fbbad0244dde7ae229e778dbefba7f28955a7ff5257d4ed1635b5576fb31",
+    "https://raw.githubusercontent.com/nats-io/nkeys.js/v1.0.4/modules/esm/nacl.js": "251e4ffcd6d2c56c7773bcf8c1549e9c07b32adb7a2156908a04930a52e614de",
+    "https://raw.githubusercontent.com/nats-io/nkeys.js/v1.0.4/src/base32.ts": "07cbfd2551cf1ef4e45784058f7583495354a167c17a75b6cbdbf6b11d91c235",
+    "https://raw.githubusercontent.com/nats-io/nkeys.js/v1.0.4/src/codec.ts": "23a574d4c7e4059c503992d6cb8ab0aa5c518f52848c4599ce04049a75f8e8ee",
+    "https://raw.githubusercontent.com/nats-io/nkeys.js/v1.0.4/src/crc16.ts": "0290d486579668a79602cef211a28038630e685147e8ddf79b32ff41a871cfdd",
+    "https://raw.githubusercontent.com/nats-io/nkeys.js/v1.0.4/src/helper.ts": "8c4121b879ac5d0d4e05b227e15a7e29057642282f020d49de36ca3c33b7d1ed",
+    "https://raw.githubusercontent.com/nats-io/nkeys.js/v1.0.4/src/kp.ts": "360259ef2bea8ee65c8fce04efb4b5aaff14382d155c0668c131d959ef9098bb",
+    "https://raw.githubusercontent.com/nats-io/nkeys.js/v1.0.4/src/mod.ts": "467181195143688f969a8d1f106e4d5064116d4736a77347f681c2a6c010ede4",
+    "https://raw.githubusercontent.com/nats-io/nkeys.js/v1.0.4/src/nkeys.ts": "ef6d234c2661598f39dd30f68b83be1ba84e6f89b851ffaabfad5128917cd8f3",
+    "https://raw.githubusercontent.com/nats-io/nkeys.js/v1.0.4/src/public.ts": "b5c893dad5ec139296bcaec6ea11ab4cb06da4f6978e05ff9c37f7d17a7c6101",
+    "https://raw.githubusercontent.com/nats-io/nkeys.js/v1.0.4/src/util.ts": "96c4c8f707ef6aaa00c23527d0a7b935efe1df3dd94e6d40707e37c5e0f14e27"
   },
   "workspace": {
     "dependencies": [

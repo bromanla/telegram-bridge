@@ -5,3 +5,4 @@ export * from "./src/launch.ts";
 export * from "./src/cache.ts";
 export * from "./src/type.utils.ts";
 export * from "./src/zod.utils.ts";
+export * from "./src/error.utils.ts";
