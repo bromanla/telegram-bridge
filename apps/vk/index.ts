@@ -4,9 +4,8 @@ import { BusService } from "@bridge/bus";
 import { bulkLaunch } from "@bridge/common";
 
 const store = new BotStore();
-const bot = new BotService(store);
 const bus = new BusService();
-
-bulkLaunch(bot);
+const bot = new BotService(store, bus);
 
 await bus.launch({ purge: true });
+bulkLaunch(bot);

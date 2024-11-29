@@ -2,8 +2,8 @@ import { logger } from "@bridge/common";
 import { AttachmentType } from "vk-io";
 
 import type { BotService } from "#src/bot/bot.service.ts";
-import type { MessageContext } from "vk-io";
 import type { AsyncContext } from "#src/bot/bot.type.ts";
+import type { MessageContext } from "vk-io";
 
 export class BotRouter {
   constructor(private service: BotService) {
@@ -28,13 +28,14 @@ export class BotRouter {
       this.stickerHandler(ctx, store);
     }
 
+    this.textHandler(ctx, store);
     // this.unprocessedHandler(ctx);
   }
 
-  private textHandler(ctx: MessageContext) {
-    //     const text = ctx.text;
-    const hasAttachments = ctx.hasAttachments();
+  private textHandler(ctx: MessageContext, store: AsyncContext) {
+    const text = ctx.text;
     const hasForwards = ctx.hasForwards;
+    // const hasAttachments = ctx.hasAttachments();
 
     //     if (hasForwards) {
     //       ctx.state.extra.push('forward');
@@ -53,13 +54,14 @@ export class BotRouter {
     const images = ctx
       .getAttachments(AttachmentType.PHOTO)
       .map((image) => image.largeSizeUrl)
-      .filter(Boolean);
+      .filter(Boolean) as string[];
 
     if (images.length) {
-      // this.emitter.emit("telegram:sendImage", {
-      //   url: images,
-      //   ...ctx.state,
-      // });
+      this.service.bus.publish("message.telegram", {
+        type: "image",
+        urls: images,
+        ...store,
+      });
     }
   }
 
@@ -70,11 +72,13 @@ export class BotRouter {
       .filter(Boolean)
       .at(0);
 
-    //     if (voice)
-    //       this.emitter.emit('telegram:sendVoice', {
-    //         url: voice,
-    //         ...ctx.state,
-    //       });
+    if (voice) {
+      this.service.bus.publish("message.telegram", {
+        type: "voice",
+        url: voice,
+        ...store,
+      });
+    }
   }
 
   private stickerHandler(ctx: MessageContext, store: AsyncContext) {
@@ -84,10 +88,11 @@ export class BotRouter {
       .filter(Boolean).at(0);
 
     if (sticker) {
-      // this.emitter.emit("telegram:sendSticker", {
-      //   url: sticker,
-      //   ...ctx.state,
-      // });
+      this.service.bus.publish("message.telegram", {
+        type: "voice",
+        url: sticker,
+        ...store,
+      });
     }
   }
 

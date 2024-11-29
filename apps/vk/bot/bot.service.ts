@@ -8,6 +8,7 @@ import { BotRouter } from "#src/bot/bot.router.ts";
 import type { MessageContext } from "vk-io";
 import type { BotStore } from "#src/bot/bot.store.ts";
 import type { AsyncContext, NextFunction } from "#src/bot/bot.type.ts";
+import type { BusService } from "@bridge/bus";
 
 export class BotService {
   public bot: VK;
@@ -15,7 +16,7 @@ export class BotService {
   public handler: BotHandler;
   public router: BotRouter;
 
-  constructor(public store: BotStore) {
+  constructor(public store: BotStore, public bus: BusService) {
     this.bot = new VK({ token: config.token });
     this.bot.updates.use(this.initAsyncContext.bind(this));
 

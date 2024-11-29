@@ -1,6 +1,6 @@
 import { AckPolicy, connect, headers, JSONCodec, NatsError } from "nats";
 import { catchError, logger, requiredEnv } from "@bridge/common";
-import { MAX_MESSAGES } from "./constant.ts";
+import { MAX_MESSAGES } from "#src/bus.option.ts";
 
 import type {
   Consumer,
@@ -14,7 +14,7 @@ import type {
   BusStream,
   BusSubject,
   GroupByStream,
-} from "./types.ts";
+} from "#src/bus.type.ts";
 
 const connectionString = requiredEnv("NATS_URL", { default: "localhost" });
 
@@ -26,7 +26,7 @@ export class BusService {
   private readonly codec = JSONCodec<any>();
 
   private readonly streams: GroupByStream<BusStore> = {
-    messages: ["messages.audio", "messages.video"],
+    message: ["message.vk", "message.telegram"],
     "notification": ["notification.warn"],
   };
 

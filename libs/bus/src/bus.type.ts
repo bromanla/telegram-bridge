@@ -1,4 +1,5 @@
 import type { Prettify } from "@bridge/common";
+import type { Store } from "#src/bus.store.ts";
 
 type BusItem<K, P, T> = {
   subject: `${K & string}.${P & string}`;
@@ -21,25 +22,6 @@ type BusTransform<T> = {
     [P in keyof T[K]]: BusItem<K, P, T[K][P]>;
   }[keyof T[K]];
 }[keyof T];
-
-/**
- * Human-readable type structure for the broker
- */
-type Store = {
-  "messages": {
-    "audio": {
-      url: string;
-    };
-    "video": {
-      text: string;
-    };
-  };
-  "notification": {
-    "warn": {
-      message: string;
-    };
-  };
-};
 
 export type BusStore = Prettify<BusTransform<Store>>;
 
