@@ -1,8 +1,9 @@
 import type { Chat, User } from "@bridge/store";
 
 type Base = {
-  user: User & { full_name: string };
+  user: User;
   chat?: Chat;
+  text?: string;
 };
 
 export type Unsupported = { text: string; url?: string };
@@ -16,10 +17,13 @@ export type Message =
       unsupported: Unsupported[];
     }
     | { type: "image"; urls: string[] }
-    | { type: "audio"; url: string }
     | { type: "voice"; url: string }
     | { type: "sticker"; url: string }
   );
+
+type OptionalUser<T extends { user: any }> =
+  & Omit<T, "user">
+  & Partial<Pick<T, "user">>;
 
 /**
  * Human-readable type structure for the broker
@@ -27,7 +31,7 @@ export type Message =
 export type Store = {
   "message": {
     telegram: Message;
-    vk: Message;
+    vk: Message & { test: 1 };
   };
   "notification": {
     "warn": {
@@ -35,3 +39,5 @@ export type Store = {
     };
   };
 };
+
+// TODO: handle OptionalUser type

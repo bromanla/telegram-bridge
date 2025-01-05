@@ -2,13 +2,10 @@ import type { Chat, User } from "@bridge/store";
 import type { Unsupported } from "@bridge/bus";
 
 export interface AsyncContext {
-  user: User & { full_name: string };
+  user: User;
   chat?: Chat;
 
-  event: {
-    text?: string;
-  };
-
+  text?: string;
   unsupported: Unsupported[];
 }
 

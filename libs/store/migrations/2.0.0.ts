@@ -4,9 +4,8 @@ export async function up(db: Kysely<any>) {
   await db.schema
     .createTable("user")
     .addColumn("id", "integer", (col) => col.primaryKey())
-    .addColumn("first_name", "varchar(256)")
-    .addColumn("last_name", "varchar(256)")
-    .addColumn("is_group", "boolean")
+    .addColumn("full_name", "varchar(256)", (col) => col.notNull())
+    .addColumn("is_group", "boolean", (col) => col.notNull())
     .execute();
 
   await db.schema

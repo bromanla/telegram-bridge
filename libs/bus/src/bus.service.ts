@@ -1,6 +1,7 @@
 import { AckPolicy, connect, headers, JSONCodec, NatsError } from "nats";
 import { catchError, getStringEnv, logger } from "@bridge/common";
 import { MAX_MESSAGES } from "#src/bus.option.ts";
+import { setTimeout } from "node:timers/promises";
 
 import type {
   Consumer,
@@ -123,6 +124,7 @@ export class BusService {
     const messages = await client.consume({ max_messages: 1 });
 
     for await (const message of messages) {
+      await setTimeout(500);
       try {
         const data = this.codec.decode(message.data);
         await fn(message, data);

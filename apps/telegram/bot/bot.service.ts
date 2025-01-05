@@ -1,6 +1,6 @@
+import { Bot } from "grammy";
 import { config } from "#src/common/config.ts";
 import { logger } from "@bridge/common";
-import { Bot, InputMediaBuilder } from "grammy";
 import { parseMode } from "@grammyjs/parse-mode";
 import { AsyncLocalStorage } from "node:async_hooks";
 
@@ -9,7 +9,7 @@ import { BotHandler } from "#src/bot/bot.handler.ts";
 import { BotRouter } from "#src/bot/bot.router.ts";
 import { i18n } from "#src/bot/middlewares/i18n.ts";
 
-import type { BotError, Filter, NextFunction } from "grammy";
+import type { BotError, NextFunction } from "grammy";
 import type { BotContext, LocalStorage } from "#src/bot/bot.type.ts";
 import type { BusService } from "@bridge/bus";
 import type { BotStore } from "#src/bot/bot.store.ts";
@@ -25,9 +25,6 @@ export class BotService {
     this.bot.api.config.use(parseMode("HTML"));
     this.bot.use(i18n);
     this.bot.use(this.initLocalStorage.bind(this));
-
-    Deno.addSignalListener("SIGINT", () => this.bot.stop());
-    Deno.addSignalListener("SIGTERM", () => this.bot.stop());
   }
 
   private async initLocalStorage(
@@ -38,6 +35,7 @@ export class BotService {
       logger.warn("access denied", ctx.from);
       return;
     }
+
     if (!ctx.message) {
       logger.warn("invalid message", ctx.update);
       return;
@@ -61,9 +59,15 @@ export class BotService {
       });
     }
 
-    this.asyncStorage.run({ forum }, () => {
-      return next();
-    });
+    /**
+     * Chats require an addition 2000000000
+     * https://dev.vk.com/ru/method/messages.send#Параметры
+     */
+    const peerId = forum.chat_id ? forum.chat_id! + 2000000000 : forum.user_id!;
+    const data = await this.store.getUserOrChatByForum(forum);
+    console.log(data);
+
+    // this.asyncStorage.run({ forum, peerId }, () => next());
   }
 
   private async catchMiddleware(err: BotError<BotContext>) {

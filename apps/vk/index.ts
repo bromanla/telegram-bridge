@@ -7,5 +7,5 @@ const store = new BotStore();
 const bus = new BusService();
 const bot = new BotService(store, bus);
 
-await bus.launch({ purge: false });
+await bus.launch({ purge: true });
 bulkLaunch(bot);

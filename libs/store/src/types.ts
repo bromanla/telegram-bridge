@@ -8,9 +8,8 @@ export interface Store {
 
 export interface User {
   id: number;
-  first_name: string | null;
-  last_name: string | null;
-  is_group: boolean | null;
+  full_name: string;
+  is_group: boolean;
 }
 
 export interface Chat {

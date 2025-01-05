@@ -83,9 +83,8 @@ export class BotService {
     const chat = await this.getChatFromContext(ctx);
 
     this.asyncContext.run({
-      user: { ...user, full_name: `${user.last_name} ${user.first_name}` },
+      user,
       chat,
-      event: {},
       unsupported: [],
     }, () => next());
   }
@@ -93,11 +92,14 @@ export class BotService {
   /* Uploading user data via the API */
   private async loadUserInfo(userId: number) {
     const [user] = await this.bot.api.users.get({ user_ids: [userId] }) || [];
-
     if (!user) return undefined;
 
     const { first_name, last_name } = user;
-    return { id: userId, first_name, last_name };
+    return {
+      id: userId,
+      full_name: `${last_name} ${first_name} [user]`,
+      is_group: false,
+    };
   }
 
   /* Uploading group data via the API */
@@ -113,7 +115,7 @@ export class BotService {
     if (!group) return undefined;
     return {
       id: groupId,
-      first_name: `${group.name} [group]`,
+      full_name: `${group.name} [group]`,
       is_group: true,
     };
   }

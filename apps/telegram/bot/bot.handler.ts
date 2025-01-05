@@ -11,16 +11,12 @@ export class BotHandler {
       "message",
       ["message.telegram"],
       "telegram",
-      async (data, message) => {
+      async (_, message) => {
         const forum = await this.loadForum(message);
         const text = this.getMessageText(message);
         const method = this.getMethodFromType(message.type);
 
-        try {
-          await this[method](forum, text, message as any);
-        } catch (e) {
-          console.log(e);
-        }
+        await this[method](forum, text, message as any);
       },
     );
   }
@@ -34,8 +30,7 @@ export class BotHandler {
 
   private async loadForum(event: Message) {
     const id = event.chat?.id ?? event.user.id;
-    const name = event.chat?.title ??
-      `${event.user.first_name} ${event.user.last_name}`;
+    const name = event.chat?.title ?? event.user.full_name;
 
     const field = event.chat ? "chat_id" : "user_id";
 
@@ -70,9 +65,11 @@ export class BotHandler {
       }
     }
 
-    if (message.type === "text") {
+    if (message.text) {
       forumMessage.push(message.text);
+    }
 
+    if (message.type === "text") {
       const unsupported = message.unsupported.map((item) =>
         "url" in item ? `<a href="${item.url}">${item.text}</a>` : item.text
       );
@@ -88,7 +85,6 @@ export class BotHandler {
   private async sendText(
     forum: Forum,
     text: string,
-    message: Extract<Message, { type: "text" }>,
   ) {
     const { message_id } = await this.service.bot.api.sendMessage(
       config.chatId,
@@ -134,8 +130,6 @@ export class BotHandler {
 
     return message_id;
   }
-
-  private sendAudio = this.sendVoice.bind(this);
 
   private async sendImage(
     forum: Forum,

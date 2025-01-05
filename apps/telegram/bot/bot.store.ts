@@ -25,6 +25,13 @@ export class BotStore extends StoreService {
       .executeTakeFirst();
   }
 
+  async getUserOrChatByForum({ chat_id, user_id }: Forum) {
+    if (chat_id) return { chat: await this.getChat(chat_id) };
+    if (user_id) return { user: await this.getUser(user_id) };
+
+    return undefined;
+  }
+
   @cache()
   public getForum(forumId: number) {
     return this

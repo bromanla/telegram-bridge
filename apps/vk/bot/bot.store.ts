@@ -19,15 +19,6 @@ export class BotStore extends StoreService {
     return user;
   }
 
-  @cache()
-  public getUser(userId: number) {
-    return this
-      .selectFrom("user")
-      .where("id", "=", userId)
-      .selectAll()
-      .executeTakeFirst();
-  }
-
   public async createChat(data: Insertable<Chat>) {
     // TODO: escaping title
     const chat = await this
@@ -42,14 +33,5 @@ export class BotStore extends StoreService {
 
     logger.debug(`Chat created (${chat!.id})`);
     return chat;
-  }
-
-  @cache()
-  public getChat(chatId: number) {
-    return this
-      .selectFrom("chat")
-      .where("id", "=", chatId)
-      .selectAll()
-      .executeTakeFirst();
   }
 }

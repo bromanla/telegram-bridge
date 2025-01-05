@@ -26,7 +26,8 @@ export class BotRouter {
   }
 
   private textHandler(ctx: MessageContext, store: AsyncContext) {
-    const text = ctx.text;
+    store.text = ctx.text;
+
     const hasForwards = ctx.hasForwards;
     const hasAttachments = ctx.hasAttachments();
 
@@ -35,10 +36,10 @@ export class BotRouter {
     }
 
     /* Send only text message */
-    if (!hasAttachments && text) {
+    if (!hasAttachments && ctx.text) {
       this.service.bus.publish("message.telegram", {
         type: "text",
-        text,
+        text: ctx.text,
         ...store,
       });
     }
