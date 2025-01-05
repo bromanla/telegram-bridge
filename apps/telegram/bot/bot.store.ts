@@ -16,14 +16,14 @@ export class BotStore extends StoreService {
     return forum!;
   }
 
-  // @Cache()
-  // public async findOneForum(id: number) {
-  //   return this.database
-  //     .selectFrom("forum")
-  //     .where((eb) => eb.or([eb("chat_id", "=", id), eb("user_id", "=", id)]))
-  //     .selectAll()
-  //     .executeTakeFirst();
-  // }
+  @cache()
+  getForumByUserIdOrChatId(id: number) {
+    return this
+      .selectFrom("forum")
+      .where((eb) => eb.or([eb("chat_id", "=", id), eb("user_id", "=", id)]))
+      .selectAll()
+      .executeTakeFirst();
+  }
 
   @cache()
   public getForum(forumId: number) {

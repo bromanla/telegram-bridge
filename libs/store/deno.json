@@ -2,7 +2,7 @@
   "name": "@bridge/store",
   "exports": "./mod.ts",
   "imports": {
-    "kysely": "npm:kysely@^0.27.4",
+    "kysely": "npm:kysely@^0.27.5",
     "pg": "npm:pg@^8.13.1"
   }
 }

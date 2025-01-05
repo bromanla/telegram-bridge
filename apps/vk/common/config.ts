@@ -1,8 +1,6 @@
-import { config as defaultConfig, requiredEnv } from "@bridge/common";
-
-const token = requiredEnv("VK_TOKEN");
+import { config as defaultConfig, getStringEnv } from "@bridge/common";
 
 export const config = {
   ...defaultConfig,
-  token,
+  token: getStringEnv("VK_TOKEN"),
 };

@@ -1,5 +1,5 @@
 import { I18n } from "@grammyjs/i18n";
-import type { BotContext } from "/bot/bot.type.ts";
+import type { BotContext } from "#src/bot/bot.type.ts";
 
 export const defaultLocale = "en";
 

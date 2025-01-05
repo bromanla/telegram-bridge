@@ -1,6 +1,7 @@
 import type { I18nFlavor } from "@grammyjs/i18n";
 import type { Context, SessionFlavor } from "grammy";
-import { Forum } from "@bridge/store";
+import type { Forum } from "@bridge/store";
+import type { ParseModeFlavor } from "@grammyjs/parse-mode";
 
 export type SessionData = {
   // TODO: peerId
@@ -11,4 +12,7 @@ export interface LocalStorage {
   forum: Forum;
 }
 
-export type BotContext = Context & I18nFlavor & SessionFlavor<SessionData>;
+export type BotContext =
+  & ParseModeFlavor<Context>
+  & I18nFlavor
+  & SessionFlavor<SessionData>;

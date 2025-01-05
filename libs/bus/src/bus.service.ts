@@ -1,5 +1,5 @@
 import { AckPolicy, connect, headers, JSONCodec, NatsError } from "nats";
-import { catchError, logger, requiredEnv } from "@bridge/common";
+import { catchError, getStringEnv, logger } from "@bridge/common";
 import { MAX_MESSAGES } from "#src/bus.option.ts";
 
 import type {
@@ -16,7 +16,7 @@ import type {
   GroupByStream,
 } from "#src/bus.type.ts";
 
-const connectionString = requiredEnv("NATS_URL", { default: "localhost" });
+const connectionString = getStringEnv("NATS_URL", "localhost");
 
 export class BusService {
   private connection: NatsConnection;
@@ -84,7 +84,8 @@ export class BusService {
   }
 
   public async getConsumer(
-    stream: BusStore["stream"],
+    stream: string,
+    subjects: string[],
     consumer: string,
   ): Promise<Consumer> {
     const [error, client] = await catchError(
@@ -96,11 +97,11 @@ export class BusService {
       if (error instanceof NatsError && error.api_error?.err_code === 10014) {
         await this.manager.consumers.add(stream, {
           durable_name: consumer,
-          filter_subjects: this.streams[stream],
+          filter_subjects: subjects,
           ack_policy: AckPolicy.Explicit,
         });
 
-        return this.getConsumer(stream, consumer)!;
+        return this.getConsumer(stream, subjects, consumer)!;
       }
 
       throw error;
@@ -111,13 +112,14 @@ export class BusService {
 
   async consume<S extends BusStore["stream"]>(
     stream: S,
+    subjects: GroupByStream<BusStore>[S],
     consumer: string,
     fn: (
-      message: JsMsg,
-      data: BusStream<S>["data"],
+      data: JsMsg,
+      message: BusStream<S>["data"],
     ) => Promise<void> | void,
   ) {
-    const client = await this.getConsumer(stream, consumer);
+    const client = await this.getConsumer(stream, subjects, consumer);
     const messages = await client.consume({ max_messages: 1 });
 
     for await (const message of messages) {

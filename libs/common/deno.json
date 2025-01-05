@@ -2,7 +2,7 @@
   "name": "@bridge/common",
   "exports": "./mod.ts",
   "imports": {
-    "@std/log": "jsr:@std/log@^0.224.11",
+    "@std/log": "jsr:@std/log@^0.224.12",
     "@std/cache": "jsr:@std/cache@^0.1.3"
   }
 }

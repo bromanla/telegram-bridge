@@ -1,9 +1,13 @@
-import { BotService } from "/bot/bot.service.ts";
+import { BotService } from "#src/bot/bot.service.ts";
 import { bulkLaunch } from "@bridge/common";
-import { StoreService } from "@bridge/store";
-import { BotStore } from "/bot/bot.store.ts";
+import { BotStore } from "#src/bot/bot.store.ts";
+import { BusService } from "@bridge/bus";
+import { setTimeout } from "node:timers/promises";
+
+await setTimeout(1000);
 
 const store = new BotStore();
-const bot = new BotService(store);
+const bus = new BusService();
+const bot = new BotService(store, bus);
 
-bulkLaunch(bot);
+await bulkLaunch(bus, bot);

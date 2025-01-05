@@ -1,17 +1,19 @@
 import type { Chat, User } from "@bridge/store";
 
 type Base = {
-  user: User;
+  user: User & { full_name: string };
   chat?: Chat;
 };
 
-type Message =
+export type Unsupported = { text: string; url?: string };
+
+export type Message =
   & Base
   & (
     | {
       type: "text";
       text: string;
-      extra: Array<string | { text: string; url: string }>;
+      unsupported: Unsupported[];
     }
     | { type: "image"; urls: string[] }
     | { type: "audio"; url: string }

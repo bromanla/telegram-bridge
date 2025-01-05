@@ -9,8 +9,8 @@
   ],
   "tasks": {
     // TODO: access control flags
-    "telegram:dev": "deno --allow-all --env --watch --inspect=127.0.0.1:9230 --check apps/telegram/index.ts",
-    "vk:dev": "deno --allow-all --env --watch --inspect=127.0.0.1:9231 --check apps/vk/index.ts",
+    "telegram:dev": "deno --allow-all --env --watch --check --inspect=127.0.0.1:9230 apps/telegram/index.ts",
+    "vk:dev": "deno --allow-all --env --watch --check --inspect=127.0.0.1:9231 apps/vk/index.ts",
     // Database migration actions
     "migrate": "deno --env --allow-env --allow-net --allow-read libs/store/src/migrate.ts $COMMAND",
     "migrate:up": "export COMMAND=up && deno task migrate",

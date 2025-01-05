@@ -1,4 +1,3 @@
-import { logger } from "@bridge/common";
 import { AttachmentType } from "vk-io";
 
 import type { BotService } from "#src/bot/bot.service.ts";
@@ -14,40 +13,37 @@ export class BotRouter {
   private async messageHandler(ctx: MessageContext) {
     const store = this.service.asyncContext.getStore()!;
 
-    store.event.text = ctx.text;
-
     /* Send only text message */
-    // const hasAttachments = this.textHandler(ctx);
-    // if (!hasAttachments) return;
+    const hasAttachments = this.textHandler(ctx, store);
+    if (!hasAttachments) return;
 
-    if (ctx.hasAttachments()) {
-      await ctx.loadMessagePayload();
+    await ctx.loadMessagePayload();
 
-      this.imagesHandler(ctx, store);
-      this.voiceHandler(ctx, store);
-      this.stickerHandler(ctx, store);
-    }
-
-    this.textHandler(ctx, store);
-    // this.unprocessedHandler(ctx);
+    this.imagesHandler(ctx, store);
+    this.voiceHandler(ctx, store);
+    this.stickerHandler(ctx, store);
+    this.unsupportedHandler(ctx, store);
   }
 
   private textHandler(ctx: MessageContext, store: AsyncContext) {
     const text = ctx.text;
     const hasForwards = ctx.hasForwards;
-    // const hasAttachments = ctx.hasAttachments();
+    const hasAttachments = ctx.hasAttachments();
 
-    //     if (hasForwards) {
-    //       ctx.state.extra.push('forward');
-    //     }
+    if (hasForwards) {
+      store.unsupported.push({ text: "forward" });
+    }
 
-    //     /* Send only text message */
-    //     if (!hasAttachments && text) {
-    //       this.emitter.emit('telegram:sendText', { text, ...ctx.state });
-    //     }
+    /* Send only text message */
+    if (!hasAttachments && text) {
+      this.service.bus.publish("message.telegram", {
+        type: "text",
+        text,
+        ...store,
+      });
+    }
 
-    //     ctx.state.text = text;
-    //     return hasAttachments;
+    return hasAttachments;
   }
 
   public imagesHandler(ctx: MessageContext, store: AsyncContext) {
@@ -96,11 +92,9 @@ export class BotRouter {
     }
   }
 
-  private unprocessedHandler(ctx: MessageContext) {
-    const unprocessedAttachments = [];
-
+  private unsupportedHandler(ctx: MessageContext, store: AsyncContext) {
     for (const type of Object.values(AttachmentType)) {
-      /* Required until all types of attachments are processed */
+      /** Required until all types of attachments are processed */
       const isProcessed = [
         AttachmentType.PHOTO,
         AttachmentType.AUDIO_MESSAGE,
@@ -109,28 +103,31 @@ export class BotRouter {
 
       if (isProcessed) continue;
 
-      /* Drowning out errors in types vk-io */
-      const attachments = ctx.getAttachments(type as AttachmentType.WALL);
-      const isNotEmpty = Boolean(attachments.length);
+      try {
+        /** Drowning out errors in types vk-io */
+        const attachments = ctx.getAttachments(type as any);
 
-      if (isNotEmpty) {
-        if (type === AttachmentType.WALL) {
-          const [wall] = attachments;
+        if (attachments.length) {
+          if (type === AttachmentType.WALL) {
+            const [wall] = attachments;
 
-          const url = `https://vk.com/wall${wall.ownerId}_${wall.id}`;
-          unprocessedAttachments.push({ url, text: type });
-        } else {
-          unprocessedAttachments.push(type);
+            const url = `https://vk.com/wall${wall.ownerId}_${wall.id}`;
+            store.unsupported.push({ url, text: type });
+          } else {
+            store.unsupported.push({ text: type });
+          }
         }
+      } catch {
+        /** mute */
       }
     }
 
-    if (unprocessedAttachments.length) {
-      // this.emitter.emit('telegram:sendText', {
-      //   ...ctx.state,
-      //   text: ctx.text ?? '',
-      //   extra: unprocessedAttachments,
-      // });
+    if (store.unsupported.length) {
+      this.service.bus.publish("message.telegram", {
+        type: "text",
+        text: ctx.text ?? "",
+        ...store,
+      });
     }
   }
 }

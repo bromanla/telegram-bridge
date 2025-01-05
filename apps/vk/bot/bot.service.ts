@@ -75,17 +75,19 @@ export class BotService {
   }
 
   private async initAsyncContext(ctx: MessageContext, next: NextFunction) {
-    // TODO: comment only dev mode
-    // if (ctx.isInbox) return next();
+    if (ctx.isInbox && !config.isDevelopment) return next();
 
     const user = await this.getUserFromContext(ctx);
     if (!user) return;
 
     const chat = await this.getChatFromContext(ctx);
 
-    this.asyncContext.run({ user, chat, event: {} }, () => {
-      return next();
-    });
+    this.asyncContext.run({
+      user: { ...user, full_name: `${user.last_name} ${user.first_name}` },
+      chat,
+      event: {},
+      unsupported: [],
+    }, () => next());
   }
 
   /* Uploading user data via the API */
@@ -100,21 +102,30 @@ export class BotService {
 
   /* Uploading group data via the API */
   private async loadGroupInfo(groupId: number) {
-    const { groups: [group] } = await this.bot.api.groups.getById({
+    /**
+     * FIXME: vk-io 4.9.0+ contract has changed
+     * { groups: [group] }
+     */
+    const [group] = await this.bot.api.groups.getById({
       group_id: Math.abs(groupId),
-    });
+    }) as any;
 
     if (!group) return undefined;
     return {
       id: groupId,
-      full_name: `${group.name} [group]`,
+      first_name: `${group.name} [group]`,
       is_group: true,
     };
   }
 
   /* Uploading chat data via the API */
   private async loadChatInfo(chatId: number) {
-    const chat = await this.bot.api.messages.getChat({ chat_id: chatId });
+    /**
+     * FIXME: vk-io 4.9.0+ there is no need to use any
+     */
+    const chat = await (this.bot.api.messages as any).getChat({
+      chat_id: chatId,
+    });
     if (!chat) return undefined;
 
     return {
