@@ -10,7 +10,7 @@ export type SessionData = {
 
 export interface LocalStorage {
   forum: Forum;
-  user: User;
+  user?: User;
   chat?: Chat;
 }
 

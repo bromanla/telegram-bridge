@@ -64,10 +64,9 @@ export class BotService {
      * https://dev.vk.com/ru/method/messages.send#Параметры
      */
     const peerId = forum.chat_id ? forum.chat_id! + 2000000000 : forum.user_id!;
-    const data = await this.store.getUserOrChatByForum(forum);
-    console.log(data);
+    const userOrChat = await this.store.getUserOrChatByForum(forum);
 
-    // this.asyncStorage.run({ forum, peerId }, () => next());
+    this.asyncStorage.run({ forum, ...userOrChat }, () => next());
   }
 
   private async catchMiddleware(err: BotError<BotContext>) {

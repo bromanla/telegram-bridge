@@ -10,12 +10,7 @@ import type {
   JsMsg,
   NatsConnection,
 } from "nats";
-import type {
-  BusStore,
-  BusStream,
-  BusSubject,
-  GroupByStream,
-} from "#src/bus.type.ts";
+import type { BusStore, BusSubject, GroupByStream } from "#src/bus.type.ts";
 
 const connectionString = getStringEnv("NATS_URL", "localhost");
 
@@ -111,13 +106,13 @@ export class BusService {
     return client;
   }
 
-  async consume<S extends BusStore["stream"]>(
-    stream: S,
-    subjects: GroupByStream<BusStore>[S],
+  async consume<S extends BusStore["subject"]>(
+    stream: BusSubject<S>["stream"],
+    subjects: S[],
     consumer: string,
     fn: (
       data: JsMsg,
-      message: BusStream<S>["data"],
+      message: BusSubject<S>["data"],
     ) => Promise<void> | void,
   ) {
     const client = await this.getConsumer(stream, subjects, consumer);

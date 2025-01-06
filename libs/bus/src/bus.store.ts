@@ -21,9 +21,9 @@ export type Message =
     | { type: "sticker"; url: string }
   );
 
-type OptionalUser<T extends { user: any }> =
-  & Omit<T, "user">
-  & Partial<Pick<T, "user">>;
+type OptionalKey<T, K extends keyof T> = T extends { type: infer U }
+  ? { type: U } & Omit<T, K> & Partial<Pick<T, K>>
+  : T;
 
 /**
  * Human-readable type structure for the broker
@@ -31,7 +31,7 @@ type OptionalUser<T extends { user: any }> =
 export type Store = {
   "message": {
     telegram: Message;
-    vk: Message & { test: 1 };
+    vk: OptionalKey<Message, "user">;
   };
   "notification": {
     "warn": {
@@ -39,5 +39,3 @@ export type Store = {
     };
   };
 };
-
-// TODO: handle OptionalUser type

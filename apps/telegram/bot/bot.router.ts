@@ -10,25 +10,24 @@ export class BotRouter {
     this.service.bot.on("message:photo", this.imageHandler.bind(this));
   }
 
-  private async textHandler(ctx: Filter<BotContext, "message:text">) {
-    // const { peerId } = this.service.asyncStorage.getStore()!
-
-    // this.emitter.emit('vk.sendText', {
-    //   handler: 'vk',
-    //   text: ctx.message.text,
-    //   peerId: ctx.peerId,
-    //   });
+  private textHandler(ctx: Filter<BotContext, "message:text">) {
+    this.service.bus.publish("message.vk", {
+      type: "text",
+      text: ctx.message.text,
+      unsupported: [],
+      ...this.service.asyncStorage.getStore(),
+    });
   }
 
   private async voiceHandler(ctx: Filter<BotContext, "message:voice">) {
     const fileId = ctx.message.voice.file_id;
     const url = await this.service.getFileUrl(fileId);
 
-    //   this.emitter.emit('vk.sendVoice', {
-    //     handler: 'vk',
-    //     peerId: ctx.peerId,
-    //     url,
-    //   });
+    this.service.bus.publish("message.vk", {
+      type: "voice",
+      url,
+      ...this.service.asyncStorage.getStore(),
+    });
   }
 
   private async stickerHandler(ctx: Filter<BotContext, "message:sticker">) {
@@ -40,11 +39,11 @@ export class BotRouter {
 
     const url = await this.service.getFileUrl(fileId);
 
-    //   this.emitter.emit('vk.sendGraffiti', {
-    //     handler: 'vk',
-    //     peerId: ctx.peerId,
-    //     url,
-    //   });
+    this.service.bus.publish("message.vk", {
+      type: "sticker",
+      url,
+      ...this.service.asyncStorage.getStore(),
+    });
   }
 
   private async imageHandler(ctx: Filter<BotContext, "message:photo">) {
@@ -52,11 +51,11 @@ export class BotRouter {
     const text = ctx.message.caption;
     const url = await this.service.getFileUrl(fileId);
 
-    //   this.emitter.emit('vk.sendImage', {
-    //     handler: 'vk',
-    //     peerId: ctx.peerId,
-    //     text,
-    //     url,
-    //   });
+    this.service.bus.publish("message.vk", {
+      type: "image",
+      text,
+      urls: [url],
+      ...this.service.asyncStorage.getStore(),
+    });
   }
 }
