@@ -13,15 +13,10 @@ import type { BusService } from "@bridge/bus";
 export class BotService {
   public bot: VK;
   public asyncContext = new AsyncLocalStorage<AsyncContext>();
-  public handler: BotHandler;
-  public router: BotRouter;
 
   constructor(public store: BotStore, public bus: BusService) {
     this.bot = new VK({ token: config.token });
     this.bot.updates.use(this.initAsyncContext.bind(this));
-
-    this.handler = new BotHandler(this);
-    this.router = new BotRouter(this);
   }
 
   private async getUserFromContext(ctx: MessageContext) {
@@ -139,6 +134,9 @@ export class BotService {
   public async launch() {
     this.bot.updates.startPolling();
     const [me] = await this.bot.api.users.get({});
+
+    new BotHandler(this);
+    new BotRouter(this);
 
     logger.info(`VK connection successful`, me);
   }

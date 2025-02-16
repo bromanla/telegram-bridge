@@ -1,73 +1,82 @@
-// import { AsyncLocalStorage } from "node:async_hooks";
-
-// import type { Filter, NextFunction } from "grammy";
+import { getRandomId } from "vk-io";
+import { createSendMethodName } from "@bridge/common";
 import type { BotService } from "#src/bot/bot.service.ts";
-// import type { BotContext } from "/bot/bot.type.ts";
-
-// this.emitter.on("vk.sendText", this.sendText.bind(this));
-// this.emitter.on("vk.sendGraffiti", this.sendGraffiti.bind(this));
-// this.emitter.on("vk.sendVoice", this.sendVoice.bind(this));
-// this.emitter.on("vk.sendImage", this.sendImage.bind(this));
+import type { Message } from "@bridge/bus";
 
 export class BotHandler {
-  constructor(private service: BotService) {}
-  //     // this._service.bot.on("message", this.loadForumMiddleware.bind(this));
-  //     this._service.bot.on("message:text", this.textHandler.bind(this));
+  constructor(private service: BotService) {
+  }
 
-  //     // this.service.bot.on('message', this.loadForumMiddleware.bind(this));
-  //     // this.service.bot.on('message:text', this.textHandler.bind(this));
-  //     // this.service.bot.on('message:voice', this.voiceHandler.bind(this));
-  //     // this.service.bot.on('message:sticker', this.stickerHandler.bind(this));
-  //     // this.service.bot.on('message:photo', this.imageHandler.bind(this));
-  //   }
+  private sendText(
+    message: Extract<Message, { type: "text" }>,
+    peerId: number,
+  ) {
+    return this.service.bot.api.messages.send({
+      peer_id: peerId,
+      message: message.text,
+      random_id: getRandomId(),
+    });
+  }
 
-  //   // private async loadForumMiddleware(
-  //   //   ctx: Filter<BotContext, "message">,
-  //   //   next: NextFunction,
-  //   // ) {
+  private async sendSticker(
+    message: Extract<Message, { type: "sticker" }>,
+    peerId: number,
+  ) {
+    const attachment = await this.service.bot.upload.messageGraffiti({
+      source: { value: message.url },
+    });
 
-  // private sendText(event: VkEvent['vk.sendText']) {
-  //   return this.bot.api.messages.send({
-  //     peer_id: event.peerId,
-  //     message: event.text,
-  //     random_id: getRandomId(),
-  //   });
-  // }
+    return this.service.bot.api.messages.send({
+      peer_id: peerId,
+      attachment,
+      random_id: getRandomId(),
+    });
+  }
 
-  // private async sendGraffiti(event: VkEvent['vk.sendGraffiti']) {
-  //   const attachment = await this.bot.upload.messageGraffiti({
-  //     source: { value: event.url },
-  //   });
+  private async sendImage(
+    message: Extract<Message, { type: "image" }>,
+    peerId: number,
+  ) {
+    const attachment = await this.service.bot.upload.messagePhoto({
+      source: { value: message.urls[0] },
+    });
 
-  //   return this.bot.api.messages.send({
-  //     peer_id: event.peerId,
-  //     attachment,
-  //     random_id: getRandomId(),
-  //   });
-  // }
+    return this.service.bot.api.messages.send({
+      peer_id: peerId,
+      attachment,
+      random_id: getRandomId(),
+    });
+  }
 
-  // private async sendImage(event: VkEvent['vk.sendImage']) {
-  //   const attachment = await this.bot.upload.messagePhoto({
-  //     source: { value: event.url },
-  //   });
+  private async sendVoice(
+    message: Extract<Message, { type: "voice" }>,
+    peerId: number,
+  ) {
+    const attachment = await this.service.bot.upload.audioMessage({
+      source: { value: message.url },
+    });
 
-  //   return this.bot.api.messages.send({
-  //     peer_id: event.peerId,
-  //     message: event.text,
-  //     attachment,
-  //     random_id: getRandomId(),
-  //   });
-  // }
+    return this.service.bot.api.messages.send({
+      peer_id: peerId,
+      attachment,
+      random_id: getRandomId(),
+    });
+  }
 
-  // private async sendVoice(event: VkEvent['vk.sendVoice']) {
-  //   const attachment = await this.bot.upload.audioMessage({
-  //     source: { value: event.url },
-  //   });
+  public launch() {
+    this.service.bus.consume(
+      "message",
+      ["message.vk"],
+      "vk",
+      async (_, message) => {
+        const peerId = message.chat?.id ?? message?.user?.id;
+        if (!peerId) {
+          return;
+        }
 
-  //   return this.bot.api.messages.send({
-  //     peer_id: event.peerId,
-  //     attachment,
-  //     random_id: getRandomId(),
-  //   });
-  // }
+        const method = createSendMethodName(message.type);
+        await this[method](message as any, peerId);
+      },
+    );
+  }
 }

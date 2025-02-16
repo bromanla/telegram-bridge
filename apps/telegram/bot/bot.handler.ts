@@ -1,5 +1,6 @@
 import { config } from "#src/common/config.ts";
 import { InputMediaBuilder } from "grammy";
+import { createSendMethodName } from "@bridge/common";
 
 import type { BotService } from "#src/bot/bot.service.ts";
 import type { Message } from "@bridge/bus";
@@ -14,7 +15,7 @@ export class BotHandler {
       async (_, message) => {
         const forum = await this.loadForum(message);
         const text = this.getMessageText(message);
-        const method = this.getMethodFromType(message.type);
+        const method = createSendMethodName(message.type);
 
         await this[method](forum, text, message as any);
       },
@@ -22,11 +23,6 @@ export class BotHandler {
   }
 
   private chatHistory = new Map<number, number>();
-
-  private getMethodFromType<T extends Message["type"]>(type: T) {
-    return "send" + type.charAt(0).toUpperCase() +
-      type.slice(1) as `send${Capitalize<T>}`;
-  }
 
   private async loadForum(event: Message) {
     const id = event.chat?.id ?? event.user.id;

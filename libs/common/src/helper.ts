@@ -12,3 +12,8 @@ export async function bulkLaunch(
     }
   }
 }
+
+export function createSendMethodName<T extends string>(type: T) {
+  return "send" + type.charAt(0).toUpperCase() +
+    type.slice(1) as `send${Capitalize<T>}`;
+}
