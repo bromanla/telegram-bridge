@@ -86,7 +86,7 @@ export class BotRouter {
 
     if (sticker) {
       this.service.bus.publish("message.telegram", {
-        type: "voice",
+        type: "sticker",
         url: sticker,
         ...store,
       });

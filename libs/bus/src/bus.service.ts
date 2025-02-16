@@ -95,6 +95,7 @@ export class BusService {
           durable_name: consumer,
           filter_subjects: subjects,
           ack_policy: AckPolicy.Explicit,
+          max_ack_pending: 1,
         });
 
         return this.getConsumer(stream, subjects, consumer)!;
@@ -116,16 +117,18 @@ export class BusService {
     ) => Promise<void> | void,
   ) {
     const client = await this.getConsumer(stream, subjects, consumer);
-    const messages = await client.consume({ max_messages: 1 });
+    const messages = await client.consume();
 
     for await (const message of messages) {
-      await setTimeout(500);
       try {
         const data = this.codec.decode(message.data);
         await fn(message, data);
 
         message.ack();
-      } catch {
+      } catch (e) {
+        await setTimeout(200);
+        logger.error("unhandled consumer error", { e });
+
         message.nak();
       }
     }

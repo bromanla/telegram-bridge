@@ -1,10 +1,11 @@
-import { cache, logger } from "@bridge/common";
+import { logger } from "@bridge/common";
 import { StoreService } from "@bridge/store";
 import type { Chat, Insertable, User } from "@bridge/store";
 
 export class BotStore extends StoreService {
   public async createUser(data: Insertable<User>) {
-    // TODO: escaping name
+    data.full_name = this.escape(data.full_name);
+
     const user = await this
       .insertInto("user")
       .values(data)
@@ -20,7 +21,8 @@ export class BotStore extends StoreService {
   }
 
   public async createChat(data: Insertable<Chat>) {
-    // TODO: escaping title
+    data.title = this.escape(data.title);
+
     const chat = await this
       .insertInto("chat")
       .values(data)

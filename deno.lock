@@ -8,6 +8,7 @@
     "jsr:@std/io@~0.225.2": "0.225.2",
     "jsr:@std/log@~0.224.14": "0.224.14",
     "jsr:@std/path@^1.0.8": "1.0.8",
+    "jsr:@std/regexp@^1.0.1": "1.0.1",
     "npm:@types/node@*": "22.5.4",
     "npm:kysely@~0.27.5": "0.27.5",
     "npm:pg@^8.13.3": "8.13.3",
@@ -39,6 +40,9 @@
     },
     "@std/path@1.0.8": {
       "integrity": "548fa456bb6a04d3c1a1e7477986b6cffbce95102d0bb447c67c4ee70e0364be"
+    },
+    "@std/regexp@1.0.1": {
+      "integrity": "5179d823465085c5480dafb44438466e83c424fadc61ba31f744050ecc0f596d"
     }
   },
   "npm": {
@@ -387,6 +391,7 @@
       },
       "libs/store": {
         "dependencies": [
+          "jsr:@std/regexp@^1.0.1",
           "npm:kysely@~0.27.5",
           "npm:pg@^8.13.3"
         ]

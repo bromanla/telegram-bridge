@@ -1,4 +1,5 @@
 import pg from "pg";
+import { escape } from "@std/regexp";
 import { Kysely, PostgresDialect } from "kysely";
 import { cache, getStringEnv, logger } from "@bridge/common";
 
@@ -33,5 +34,9 @@ export class StoreService extends Kysely<Store> {
       .where("id", "=", chatId)
       .selectAll()
       .executeTakeFirst();
+  }
+
+  protected escape(text: string) {
+    return escape(text);
   }
 }

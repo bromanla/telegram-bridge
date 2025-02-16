@@ -2,6 +2,7 @@
   "name": "@bridge/store",
   "exports": "./mod.ts",
   "imports": {
+    "@std/regexp": "jsr:@std/regexp@^1.0.1",
     "kysely": "npm:kysely@^0.27.5",
     "pg": "npm:pg@^8.13.3"
   }

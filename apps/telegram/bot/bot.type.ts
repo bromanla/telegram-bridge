@@ -4,7 +4,6 @@ import type { Chat, Forum, User } from "@bridge/store";
 import type { ParseModeFlavor } from "@grammyjs/parse-mode";
 
 export type SessionData = {
-  // TODO: peerId
   __language_code?: "ru" | "en";
 };
 
