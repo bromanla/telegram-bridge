@@ -1,0 +1,71 @@
+x-common-env: &common_env
+  env_file:
+    - .env
+  environment:
+    POSTGRESQL_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/bridge
+    NATS_URL: nats://nats:4222
+
+services:
+  nats:
+    image: nats:2.10.20-alpine3.20
+    container_name: bridge_bus
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command: --js --http_port 8222 --sd /data
+    volumes:
+      - ./data/nats:/data
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: bridge_store
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: bridge
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "bridge", "-U", "${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./data/postgresql:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migrate
+    container_name: bridge_migrate
+    <<: *common_env
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  telegram:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: telegram
+    container_name: bridge_tg
+    <<: *common_env
+    depends_on:
+      - migrate
+      - nats
+    restart: unless-stopped
+
+  vk:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: vk
+    container_name: bridge_vk
+    <<: *common_env
+    depends_on:
+      - migrate
+      - nats
+    restart: unless-stopped

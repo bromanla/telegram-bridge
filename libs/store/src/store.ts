@@ -15,7 +15,7 @@ export class StoreService extends Kysely<Store> {
       }),
     });
 
-    logger.info("Store connection successful");
+    logger.info("Store connection successful", { url: connectionString });
   }
 
   @cache()

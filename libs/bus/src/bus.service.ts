@@ -66,6 +66,7 @@ export class BusService {
 
     logger.info("success launch", {
       service: BusService.name,
+      url: connectionString,
     });
   }
 

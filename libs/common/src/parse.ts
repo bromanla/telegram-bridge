@@ -25,7 +25,7 @@ function safeParse<T>(data: Buffer | string | Readable) {
 
     data.on("end", () => {
       try {
-        const buffer = Buffer.concat(chunks);
+        const buffer = Buffer.concat(chunks as unknown as Uint8Array[]);
         const body = JSON.parse(buffer.toString()) as T;
 
         resolve(body);
