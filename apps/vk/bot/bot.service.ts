@@ -16,7 +16,7 @@ export class BotService {
 
   constructor(public store: BotStore, public bus: BusService) {
     this.bot = new VK({ token: config.token });
-    this.bot.updates.use(this.initAsyncContext.bind(this));
+    this.bot.updates.on("message_new", this.initAsyncContext.bind(this));
   }
 
   private async getUserFromContext(ctx: MessageContext) {
@@ -70,7 +70,7 @@ export class BotService {
   }
 
   private async initAsyncContext(ctx: MessageContext, next: NextFunction) {
-    if (ctx.isInbox && !config.isDevelopment) return next();
+    if (!ctx.isInbox) return;
 
     const user = await this.getUserFromContext(ctx);
     if (!user) return;

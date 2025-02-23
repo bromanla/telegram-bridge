@@ -4,7 +4,8 @@ import type { Chat, Insertable, User } from "@bridge/store";
 
 export class BotStore extends StoreService {
   public async createUser(data: Insertable<User>) {
-    data.full_name = this.escape(data.full_name);
+    // FIXME: This is a temporary solution to prevent SQL injection
+    // data.full_name = this.escape(data.full_name);
 
     const user = await this
       .insertInto("user")
@@ -21,7 +22,8 @@ export class BotStore extends StoreService {
   }
 
   public async createChat(data: Insertable<Chat>) {
-    data.title = this.escape(data.title);
+    // FIXME: This is a temporary solution to prevent SQL injection
+    // data.title = this.escape(data.title);
 
     const chat = await this
       .insertInto("chat")

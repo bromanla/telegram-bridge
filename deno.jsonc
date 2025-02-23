@@ -9,12 +9,12 @@
   ],
   "tasks": {
     // Watch mode commands: run and debug the app with live reloading
-    "watch": "deno -A --env --watch --check --inspect=127.0.0.1:$PORT apps/$APP/index.ts",
+    "watch": "deno -A --env-file=.dev.env --watch --check --inspect=127.0.0.1:$PORT apps/$APP/index.ts",
     "watch:tg": "export PORT=9230 && export APP=telegram && deno task watch",
     "watch:vk": "export PORT=9231 && export APP=vk && deno task watch",
 
     // Database migration actions
-    "migrate": "deno --env --allow-env --allow-net --allow-read libs/store/src/migrate.ts $COMMAND",
+    "migrate": "deno --allow-env --allow-net --allow-read libs/store/src/migrate.ts $COMMAND",
     "migrate:up": "export COMMAND=up && deno task migrate",
     "migrate:down": "export COMMAND=down && deno task migrate",
 
@@ -22,7 +22,16 @@
     "compile": "deno compile -A -o bin/$APP apps/$APP/index.ts",
     "compile:tg": "export APP=telegram && deno task compile",
     "compile:vk": "export APP=vk && deno task compile",
-    "compile:migrate": "deno compile -A --include libs/store/migrations -o bin/migrate libs/store/src/migrate.ts"
+    "compile:migrate": "deno compile -A --include libs/store/migrations -o bin/migrate libs/store/src/migrate.ts",
+
+    "run:vk": {
+      "command": "deno run -A apps/vk/index.ts",
+      "dependencies": ["migrate"]
+    },
+    "run:tg": {
+      "command": "deno run -A apps/telegram/index.ts",
+      "dependencies": ["migrate"]
+    }
   },
   "imports": {
     "@std/datetime": "jsr:@std/datetime@^0.225.3",

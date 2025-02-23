@@ -30,3 +30,16 @@ WORKDIR /app
 COPY --from=builder /app/bin/migrate .
 
 CMD ["/app/migrate"]
+
+# Stage 1: Compilation of binary files
+FROM denoland/deno:2.2.1 AS app
+
+WORKDIR /app
+USER deno
+
+COPY . .
+
+RUN deno cache --allow-import apps/vk/index.ts main.ts
+RUN deno cache --allow-import apps/telegram/index.ts main.ts
+
+CMD ["deno", "task", "run:*"]
