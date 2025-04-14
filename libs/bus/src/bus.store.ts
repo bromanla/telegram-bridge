@@ -33,9 +33,4 @@ export type Store = {
     telegram: Message;
     vk: OptionalKey<Message, "user">;
   };
-  "notification": {
-    "warn": {
-      message: string;
-    };
-  };
 };

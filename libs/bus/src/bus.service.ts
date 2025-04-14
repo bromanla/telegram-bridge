@@ -23,7 +23,6 @@ export class BusService {
 
   private readonly streams: GroupByStream<BusStore> = {
     message: ["message.vk", "message.telegram"],
-    "notification": ["notification.warn"],
   };
 
   private async setupStreams() {
@@ -127,8 +126,18 @@ export class BusService {
 
         message.ack();
       } catch (e) {
+        const { redeliveryCount } = message.info;
+
+        if (redeliveryCount >= 3) {
+          logger.warn("unhandled message dropped", {
+            redeliveryCount,
+            subject: message.subject,
+            e,
+          });
+        }
+
         await setTimeout(200);
-        logger.error("unhandled consumer error", { e });
+        logger.error("unhandled consumer error", { e, redeliveryCount });
 
         message.nak();
       }
